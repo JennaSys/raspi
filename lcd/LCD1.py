@@ -31,12 +31,12 @@ def main():
   GPIO.setup(LCD_D7, GPIO.OUT) # DB7
 
   #LCD INIT
-  lcd_byte(0x33,LCD_CMD) #initialization
-  lcd_byte(0x32,LCD_CMD) #initialization
-  lcd_byte(0x28,LCD_CMD) #4bit mode / 2-line / 5x7
-  lcd_byte(0x0C,LCD_CMD) #Display ON / Cursor OFF / Blink OFF  
-  lcd_byte(0x06,LCD_CMD) #Inc Cursor / No Display Shift
-  lcd_byte(0x01,LCD_CMD) #Clear Display  
+  send_byte(0x33,LCD_CMD) #initialization
+  send_byte(0x32,LCD_CMD) #initialization
+  send_byte(0x28,LCD_CMD) #4bit mode / 2-line / 5x7
+  send_byte(0x0C,LCD_CMD) #Display ON / Cursor OFF / Blink OFF  
+  send_byte(0x06,LCD_CMD) #Inc Cursor / No Display Shift
+  send_byte(0x01,LCD_CMD) #Clear Display  
   time.sleep(CLR_DELAY)
 
   # Send some text
