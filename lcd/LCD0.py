@@ -15,9 +15,6 @@ LCD_WIDTH = 16    # Maximum characters per line
 LCD_CHR = True
 LCD_CMD = False
 
-LCD_LINE_1 = 0x80 # LCD RAM address for the 1st line
-LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line 
-
 # Timing constants
 E_PULSE = 0.00005
 E_DELAY = 0.00005
@@ -43,23 +40,23 @@ def main():
   time.sleep(CLR_DELAY)
 
   # Send some text
-  lcd_string("Riverside\n       Raspberry")
+  send_string("Riverside\n       Raspberry")
   time.sleep(3)
 
   GPIO.cleanup()
 
 
-def lcd_string(message):
-  # Send string to display
-  message = message.ljust(LCD_WIDTH," ")  
+def send_string(message):
+  message = message.ljust(LCD_WIDTH," ")  #pad to LCD width  
 
   for char in message:
     if char == '\n':
-      lcd_byte(0xC0, LCD_CMD)  # line 2
+      send_byte(0xC0, LCD_CMD)  #Move to line 2
     else:
-      lcd_byte(ord(char), LCD_CHR)
+      send_byte(ord(char), LCD_CHR)
 
-def lcd_byte(bits, mode):
+
+def send_byte(bits, mode):
   # mode = True  for character / False for command
   GPIO.output(LCD_RS, mode) # RS
 
