@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-import time
+from time import sleep
 
 # Adafruit compatible mapping
 LCD_RS = 25
@@ -21,7 +21,7 @@ E_DELAY = 0.00005
 CLR_DELAY = 0.003
 
 def main():
-  #GPIO INIT  
+  # GPIO INIT  
   GPIO.setmode(GPIO.BCM)
   GPIO.setup(LCD_E, GPIO.OUT)  # E
   GPIO.setup(LCD_RS, GPIO.OUT) # RS
@@ -30,18 +30,18 @@ def main():
   GPIO.setup(LCD_D6, GPIO.OUT) # DB6
   GPIO.setup(LCD_D7, GPIO.OUT) # DB7
 
-  #LCD INIT
+  # LCD INIT
   send_byte(0x33,LCD_CMD) #initialization
   send_byte(0x32,LCD_CMD) #initialization
   send_byte(0x28,LCD_CMD) #4bit mode / 2-line / 5x7
   send_byte(0x0C,LCD_CMD) #Display ON / Cursor OFF / Blink OFF  
   send_byte(0x06,LCD_CMD) #Inc Cursor / No Display Shift
   send_byte(0x01,LCD_CMD) #Clear Display  
-  time.sleep(CLR_DELAY)
+  sleep(CLR_DELAY)
 
   # Send some text
   send_string("Riverside\n       Raspberry")
-  time.sleep(3)
+  sleep(3)
 
   GPIO.cleanup()
 
@@ -55,6 +55,14 @@ def send_string(message):
     else:
       send_byte(ord(char), LCD_CHR)
 
+
+def toggle_enable():
+  time.sleep(E_DELAY)    
+  GPIO.output(LCD_E, True)  
+  time.sleep(E_PULSE)
+  GPIO.output(LCD_E, False)  
+  time.sleep(E_DELAY)   
+    
 
 def send_byte(bits, mode):
   # mode = True  for character / False for command
@@ -76,13 +84,6 @@ def send_byte(bits, mode):
 
   toggle_enable()   
 
-def toggle_enable():
-  time.sleep(E_DELAY)    
-  GPIO.output(LCD_E, True)  
-  time.sleep(E_PULSE)
-  GPIO.output(LCD_E, False)  
-  time.sleep(E_DELAY)   
-    
     
 if __name__ == '__main__':
   main()	
