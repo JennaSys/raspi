@@ -55,7 +55,7 @@ def lcd_string(message):
 
   for char in message:
     if char == '\n':
-      lcd_byte(0xC0)  # line 2
+      lcd_byte(0xC0, LCD_CMD)  # line 2
     else:
       lcd_byte(ord(char), LCD_CHR)
 
