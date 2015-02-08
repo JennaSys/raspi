@@ -57,11 +57,11 @@ def send_string(message):
 
 
 def toggle_enable():
-  time.sleep(E_DELAY)    
+  sleep(E_DELAY)    
   GPIO.output(LCD_E, True)  
-  time.sleep(E_PULSE)
+  sleep(E_PULSE)
   GPIO.output(LCD_E, False)  
-  time.sleep(E_DELAY)   
+  sleep(E_DELAY)   
     
 
 def send_byte(bits, mode):
