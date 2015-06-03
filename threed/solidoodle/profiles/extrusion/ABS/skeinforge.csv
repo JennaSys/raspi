@@ -1,0 +1,9 @@
+Format is tab separated skeinforge settings.
+Name                          	Value
+WindowPosition	666+0
+Open File for Skeinforge	C:/Tonys_laptop/Makerbot_things/tony_stuff/cube_hook_15882/cube_hook_plain_ctr_120114a.stl
+analyze	False
+craft	True
+help	False
+meta	False
+profile	False
