@@ -2,7 +2,7 @@ Format is tab separated multiply settings.
 Name                          	Value
 WindowPosition	703+53
 Open File for Multiply	
-Activate Multiply:	False
+Activate Multiply:	True
 Center X (mm):	0.0
 Center Y (mm):	0.0
 Number of Columns (integer):	1

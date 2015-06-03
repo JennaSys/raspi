@@ -1,0 +1,23 @@
+Format is tab separated skeinlayer settings.
+Name                          	Value
+WindowPosition	600+0
+Open File for Skeinlayer	
+Activate Skeinlayer	True
+Frame List
+Animation Line Quickening (ratio):	1.0
+Animation Slide Show Rate (layers/second):	2.0
+Draw Arrows	True
+Go Around Extruder Off Travel	False
+Layer (index):	9
+Layer Extra Span (integer):	0
+Line (index):	241
+Display Line	False
+View Move	True
+Scale (pixels per millimeter):	5.0
+Screen Horizontal Inset (pixels):	654
+Screen Vertical Inset (pixels):	211
+Show Gcode	True
+Show Position	True
+Width of Extrusion Thread (pixels):	3
+Width of Selection Thread (pixels):	6
+Width of Travel Thread (pixels):	1

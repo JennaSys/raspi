@@ -7,8 +7,8 @@ Cooling Rate (Celcius/second):	3.0
 Heating Rate (Celcius/second):	10.0
 Base Temperature (Celcius):	190.0
 Interface Temperature (Celcius):	190.0
-Object First Layer Infill Temperature (Celcius):	190.0
-Object First Layer Perimeter Temperature (Celcius):	190.0
+Object First Layer Infill Temperature (Celcius):	195.0
+Object First Layer Perimeter Temperature (Celcius):	200.0
 Object Next Layers Temperature (Celcius):	190.0
 Support Layers Temperature (Celcius):	190.0
 Supported Layers Temperature (Celcius):	190.0

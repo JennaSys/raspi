@@ -1,0 +1,9 @@
+Format is tab separated skeinforge settings.
+Name                          	Value
+WindowPosition	666+17
+Open File for Skeinforge	C:/Data/3D/STL/Z-Backlash-Outer-Hex-F.STL
+analyze	False
+craft	True
+help	False
+meta	False
+profile	False
