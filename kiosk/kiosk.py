@@ -8,7 +8,7 @@ import util
 
 class Kiosk(pyglet.window.Window):
 
-    image_path = "/resources/"
+    image_path = "resources"
     view_path = "ads"
     print_path = "coupons"
     view_file_prefix = "ad_"
@@ -95,6 +95,7 @@ class Kiosk(pyglet.window.Window):
             # Verify resource folders are valid
             full_path = os.path.join(self.usbdrive, self.image_path, self.view_path)
             if os.path.isdir(full_path):
+                # Looks like resources are available so go ahead and load them after validating names
                 for fn in os.listdir(full_path):
                     if os.path.isfile(os.path.join(full_path, fn)) and fn[:len(self.view_file_prefix)] == self.view_file_prefix:
                         self.images.append((fn, pyglet.image.load(os.path.join(full_path, fn))))
