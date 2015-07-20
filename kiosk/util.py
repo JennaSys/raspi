@@ -6,6 +6,7 @@ def usbdrive_available():
 
     partitions = psutil.disk_partitions()
 
+    # Look for removable media
     if 'win' in sys.platform:
         return any('rw,removable' in partition.opts for partition in partitions)
     elif 'linux' in sys.platform:
@@ -17,7 +18,11 @@ def get_usb_drive():
     partitions = psutil.disk_partitions()
 
     # Get partitions that are both read/write and removable
-    mounts = [partition.mountpoint for partition in partitions if 'rw,removable' in partition.opts]
+    if 'win' in sys.platform:
+        mounts = [partition.mountpoint for partition in partitions if 'rw,removable' in partition.opts]
+    elif 'linux' in sys.platform:
+        mounts = [partition.mountpoint for partition in partitions if '/dev/sda' in partition.device]
+   
 
     if len(mounts) > 0:
         return mounts[0]
