@@ -1,7 +1,13 @@
 import pyglet
 from pyglet.window import key
 import os
+import sys
 import ConfigParser
+
+if 'win' in sys.platform:
+    import testGPIO as GPIO
+else:
+    import RPi.GPIO as GPIO
 
 import util
 
@@ -23,6 +29,17 @@ class Kiosk(pyglet.window.Window):
 
         self.usbdrive = ''
 
+    def setup_gpio(self):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)  #Previous btn
+        GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP)  #Next btn
+        GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP)  #Print btn
+
+        GPIO.add_event_detect(13, GPIO.FALLING, callback=self.previous_image, bouncetime=50)
+        GPIO.add_event_detect(19, GPIO.FALLING, callback=self.next_image, bouncetime=50)
+        GPIO.add_event_detect(26, GPIO.FALLING, callback=self.send_print, bouncetime=50)
+
+
     def setup_ui(self):
         self.set_caption("Kiosk")
         # self.set_exclusive_mouse(True)
@@ -40,8 +57,8 @@ class Kiosk(pyglet.window.Window):
                                              color=(255,255,255,255))
 
     def reset_clock(self):
-        pyglet.clock.unschedule(self.next_image)
-        pyglet.clock.schedule_interval(self.next_image, self.view_time)
+        pyglet.clock.unschedule(self.set_next_image)
+        pyglet.clock.schedule_interval(self.set_next_image, self.view_time)
 
     def dismiss_dialog(self, dtime):
         # Callback for removing status messages
@@ -75,17 +92,15 @@ class Kiosk(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
 
         if symbol == key.RIGHT:
-            self.image_idx = (self.image_idx + 1) % len(self.images)
-            self.reset_clock()
+            self.next_image()
         elif symbol == key.LEFT:
-            self.image_idx = (self.image_idx + len(self.images) - 1) % len(self.images)
-            self.reset_clock()
+            self.previous_image()
         elif symbol == key.ENTER:
-            self.send_print(self.images[self.image_idx][0])
+            self.send_print()
         elif symbol == key.ESCAPE:
             return pyglet.event.EVENT_HANDLED
         elif symbol == key.C and modifiers & key.MOD_CTRL:
-            pyglet.app.exit()
+            self.stop()
 
     def load_images(self, dtime):
 
@@ -106,7 +121,7 @@ class Kiosk(pyglet.window.Window):
                     # Clear any errors in case drive was hot plugged
                     pyglet.clock.unschedule(self.load_images)
                     self.dismiss_dialog(0)
-                    pyglet.clock.schedule_interval(self.next_image, self.view_time)
+                    pyglet.clock.schedule_interval(self.set_next_image, self.view_time)
                 else:
                     self.error_dialog("Error: No valid resources found!")
                     pyglet.clock.schedule_interval(self.load_images, self.view_time)
@@ -121,12 +136,22 @@ class Kiosk(pyglet.window.Window):
         image.anchor_x = image.width/2
         image.anchor_y = image.height/2
 
-    def next_image(self, dtime):
+    def set_next_image(self, dtime):
         # Callback for auto-increment
         if len(self.images) > 0:
             self.image_idx = (self.image_idx + 1) % len(self.images)
 
-    def send_print(self, fname):
+    def next_image(self):
+        self.set_next_image(0)
+        self.reset_clock()
+
+    def previous_image(self):
+        if len(self.images) > 0:
+            self.image_idx = (self.image_idx + len(self.images) - 1) % len(self.images)
+        self.reset_clock()
+
+    def send_print(self):
+        fname = self.images[self.image_idx][0]
         if len(fname) > 0:
             print_name = ''.join([self.print_file_prefix, fname[len(self.view_file_prefix):]])
             if os.path.isfile(os.path.join(self.usbdrive, self.image_path, self.print_path, print_name)):
@@ -139,8 +164,13 @@ class Kiosk(pyglet.window.Window):
     def start(self):
 
         self.setup_ui()
+        self.setup_gpio()
         self.load_images(0)
         pyglet.app.run()
+
+    def stop(self):
+        GPIO.cleanup()
+        pyglet.app.exit()
 
 
 if __name__ == '__main__':
