@@ -1,4 +1,5 @@
-#!/usr/bin/python
+# Stub for running GPIO apps on Windows
+
 BOARD = "board"
 BCM = "bcm"
 OUT = "out"

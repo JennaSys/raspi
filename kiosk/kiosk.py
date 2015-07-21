@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import pyglet
 from pyglet.window import key
 import os
