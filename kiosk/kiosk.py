@@ -101,11 +101,11 @@ class Kiosk(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
 
         if symbol == key.RIGHT:
-            self.next_image(0)
+            self.next_image()
         elif symbol == key.LEFT:
-            self.previous_image(0)
+            self.previous_image()
         elif symbol == key.ENTER:
-            self.send_print(0)
+            self.send_print()
         elif symbol == key.ESCAPE:
             return pyglet.event.EVENT_HANDLED
         elif symbol == key.C and modifiers & key.MOD_CTRL:
@@ -151,18 +151,18 @@ class Kiosk(pyglet.window.Window):
         if len(self.images) > 0:
             self.image_idx = (self.image_idx + 1) % len(self.images)
 
-    def next_image(self, pin):
+    def next_image(self, pin=0, value=0, ticks=0):
         logger.debug("Next")
         self.set_next_image(0)
         self.reset_clock()
 
-    def previous_image(self, pin):
+    def previous_image(self, pin=0, value=0, ticks=0):
         logger.debug("Previous")
         if len(self.images) > 0:
             self.image_idx = (self.image_idx + len(self.images) - 1) % len(self.images)
         self.reset_clock()
 
-    def send_print(self, pin):
+    def send_print(self,  pin=0, value=0, ticks=0):
         logger.debug("Print")
         if len(self.images) > 0:
             fname = self.images[self.image_idx][0]
