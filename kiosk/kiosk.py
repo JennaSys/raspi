@@ -4,11 +4,16 @@ from pyglet.window import key
 import os
 import sys
 import ConfigParser
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 if 'win' in sys.platform:
     import testGPIO as GPIO
 else:
     import RPi.GPIO as GPIO
+    # import testGPIO as GPIO
 
 import util
 
@@ -104,6 +109,7 @@ class Kiosk(pyglet.window.Window):
             self.stop()
 
     def load_images(self, dtime):
+        logger.debug("Load")
 
         # Verify resource drive is available
         if util.usbdrive_available():
@@ -143,24 +149,28 @@ class Kiosk(pyglet.window.Window):
             self.image_idx = (self.image_idx + 1) % len(self.images)
 
     def next_image(self, pin):
+        logger.debug("Next")
         self.set_next_image(0)
         self.reset_clock()
 
     def previous_image(self, pin):
+        logger.debug("Previous")
         if len(self.images) > 0:
             self.image_idx = (self.image_idx + len(self.images) - 1) % len(self.images)
         self.reset_clock()
 
     def send_print(self, pin):
-        fname = self.images[self.image_idx][0]
-        if len(fname) > 0:
-            print_name = ''.join([self.print_file_prefix, fname[len(self.view_file_prefix):]])
-            if os.path.isfile(os.path.join(self.usbdrive, self.image_path, self.print_path, print_name)):
-                self.printing_label.text = "Printing: {0}".format(print_name)
-            else:
-                self.error_dialog("Error: Print file '{0}' not found".format(print_name))
-            self.reset_clock()
-            pyglet.clock.schedule_once(self.dismiss_dialog, 5.0)
+        logger.debug("Print")
+        if len(self.images) > 0:
+            fname = self.images[self.image_idx][0]
+            if len(fname) > 0:
+                print_name = ''.join([self.print_file_prefix, fname[len(self.view_file_prefix):]])
+                if os.path.isfile(os.path.join(self.usbdrive, self.image_path, self.print_path, print_name)):
+                    self.printing_label.text = "Printing: {0}".format(print_name)
+                else:
+                    self.error_dialog("Error: Print file '{0}' not found".format(print_name))
+                self.reset_clock()
+                pyglet.clock.schedule_once(self.dismiss_dialog, 5.0)
 
     def start(self):
 
