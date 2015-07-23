@@ -17,7 +17,7 @@ def setup(pin, mode, **kwargs):
     print "SETUP(", pin, "):", mode, [kwargs[key] for key in kwargs]
 
 def output(pin, value):
-    print "OUTPUT(", pin, ":", value
+    print "OUTPUT(", pin, "):", value
 
 def cleanup():
     print "clean-up"

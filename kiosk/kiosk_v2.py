@@ -10,9 +10,9 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 if 'win' in sys.platform:
-    import test_pigpio as pigpio
+    import testGPIO as GPIO
 else:
-    import pigpio
+    import RPi.GPIO as GPIO
     # import testGPIO as GPIO
 
 import util
@@ -36,17 +36,14 @@ class Kiosk(pyglet.window.Window):
         self.usbdrive = ''
 
     def setup_gpio(self):
-        self.gpio = pigpio.pi()
-        self.gpio.set_mode(13, pigpio.INPUT)  #Previous btn
-        self.gpio.set_mode(19, pigpio.INPUT)  #Next btn
-        self.gpio.set_mode(26, pigpio.INPUT)  #Print btn
-        self.gpio.set_pull_up_down(13, pigpio.PUD_UP)
-        self.gpio.set_pull_up_down(19, pigpio.PUD_UP)
-        self.gpio.set_pull_up_down(26, pigpio.PUD_UP)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)  #Previous btn
+        GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP)  #Next btn
+        GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP)  #Print btn
 
-        self.gpio.callback(13, pigpio.FALLING_EDGE, self.previous_image)
-        self.gpio.callback(19, pigpio.FALLING_EDGE, self.next_image)
-        self.gpio.callback(26, pigpio.FALLING_EDGE, self.send_print)
+        GPIO.add_event_detect(13, GPIO.FALLING, callback=self.previous_image, bouncetime=50)
+        GPIO.add_event_detect(19, GPIO.FALLING, callback=self.next_image, bouncetime=50)
+        GPIO.add_event_detect(26, GPIO.FALLING, callback=self.send_print, bouncetime=50)
 
 
     def setup_ui(self):
@@ -183,7 +180,7 @@ class Kiosk(pyglet.window.Window):
         pyglet.app.run()
 
     def stop(self):
-        self.gpio.stop()
+        GPIO.cleanup()
         pyglet.app.exit()
 
 
