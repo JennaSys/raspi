@@ -29,6 +29,7 @@ class Kiosk(pyglet.window.Window):
 
     def __init__(self, *args, **kwargs):
         super(Kiosk, self).__init__(*args, **kwargs)
+        self.running = False
 
         self.images = []
         self.image_idx = 0
@@ -180,13 +181,30 @@ class Kiosk(pyglet.window.Window):
         self.setup_ui()
         self.setup_gpio()
         self.load_images(0)
-        pyglet.app.run()
+        # pyglet.app.run()
+        self.running = True
 
     def stop(self):
         self.gpio.stop()
-        pyglet.app.exit()
+        # pyglet.app.exit()
+        self.running = False
 
 
 if __name__ == '__main__':
     kiosk = Kiosk(fullscreen=True)
     kiosk.start()
+
+    try:
+        while kiosk.running:
+            # Manual pyglet event loop to work around threading issue with pigpio
+            pyglet.clock.tick()
+
+            for window in pyglet.app.windows:
+                window.switch_to()
+                window.dispatch_events()
+                window.dispatch_event('on_draw')
+                window.flip()
+    except:
+        logger.debu("Exiting...")
+    finally:
+        kiosk.stop()
