@@ -1,17 +1,24 @@
 #!/usr/bin/env python
 
-import pigpio
 import logging
-   
-logging.basicConfig(level=logging.DEBUG)
+import time
+import sys
 
+if 'win' in sys.platform:
+    import test_pigpio as pigpio
+else:
+    import pigpio
 
-class weigand:
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+log = logging.getLogger('Wiegand')
+log.setLevel(logging.DEBUG)
+
+class Weigand:
 
     BYTE_LEN = 8
-    CODE_BYTES = 4  #  Wiegand 26=3, Wiegand34=4
+    CODE_BYTES = 4   # Wiegand26=3, Wiegand34=4
 
-    def __init__(self, pi, gpio_0, gpio_1, callback, bit_timeout=10):
+    def __init__(self, pi, gpio_0, gpio_1, callback, reverse_bytes=False, bit_timeout=10):
 
         """
         Instantiate with the pi, gpio for 0 (green wire), the gpio for 1
@@ -27,6 +34,7 @@ class weigand:
 
         self.callback = callback
         self.bit_timeout = bit_timeout
+        self.reverse_bytes = reverse_bytes
 
         self.in_code = False
 
@@ -39,7 +47,6 @@ class weigand:
         self.cb_0 = self.pi.callback(gpio_0, pigpio.FALLING_EDGE, self._cb)
         self.cb_1 = self.pi.callback(gpio_1, pigpio.FALLING_EDGE, self._cb)
 
-
     def _cb(self, gpio, level, tick):
 
         """
@@ -50,7 +57,7 @@ class weigand:
 
         if level < pigpio.TIMEOUT:
 
-            if self.in_code == False:
+            if not self.in_code:
                 self.bits = 1
                 self.num = 0
                 self.parity_even = 0 if gpio == self.gpio_0 else 1
@@ -96,27 +103,30 @@ class weigand:
                     self.in_code = False
                     self.parity_odd = self.num   # should only have one bit at this point
                     logging.debug("PE={}  PO={}".format(self.parity_even, self.parity_odd)) 
-                    if self.parity(self.data[:2],0) == self.parity_even and self.parity(self.data[2:],1) == self.parity_odd:
-                        self.callback(self.bits, self.data[::-1])
+                    if self.get_parity(self.data[:2],0) == self.parity_even and self.get_parity(self.data[2:],1) == self.parity_odd:
+                        if self.reverse_bytes:
+                            self.callback(self.bits, self.data[::-1])
+                        else:
+                            self.callback(self.bits, self.data)
                     else:
                         self.callback(self.bits, [])
-                    
 
     def cancel(self):
-
         """
         Cancel the Wiegand decoder.
         """
-
         self.cb_0.cancel()
         self.cb_1.cancel()
 
-    def parity(self, data, evenodd):
+    def get_parity(self, data, evenodd):
+        """
+        data = [list of bytes to parity check]
+        evenodd = 0 if even parity or 1 if odd parity
+        """
         p = 0
         for value in data:
             p += bin(value).count('1')
         return ((p % 2) + evenodd) % 2
-        
 
     def total(self, values):
         t = 0
@@ -127,19 +137,15 @@ class weigand:
         
 if __name__ == "__main__":
 
-    import time
-
-
     def validate_id(bits, value):
         print("bits={} bytes={} value={}".format(bits, [hex(n) for n in value], w.total(value)))
 
-    pi = pigpio.pi()
-
-    w = weigand(pi, 14, 15, validate_id)
-
-    time.sleep(300)
-
-    w.cancel()
-
-    pi.stop()
+    try:
+        pi = pigpio.pi()
+        w = Weigand(pi, 14, 15, validate_id)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        w.cancel()
+        pi.stop()
 

@@ -1,14 +1,16 @@
+from keys import mindbody   #this is a dictionary that holds the MB keys
+
 """This is where most universal code for the Python examples of API implementation exist.
    Much of the abstracted logic such as filling out credential objects and arrays
    resides in this class."""
 
-SOURCE_NAME = "JennaSysEngineering"
-SOURCE_PASSWORD = "U2aiZnC1fQ+opQjrwON7S/J1gsw="
+SOURCE_NAME = mindbody['SOURCE_NAME']
+SOURCE_PASSWORD = mindbody['SOURCE_PASSWORD']
 
-USER_NAME = "Siteowner"
-USER_PASSWORD = "apitest1234"
+USER_NAME = mindbody['USER_NAME']
+USER_PASSWORD = mindbody['USER_PASSWORD']
 
-SITE_IDS = [-99]
+SITE_IDS = mindbody['SITE_IDS']
 
 
 def BuildWsdlUrl(serviceName):

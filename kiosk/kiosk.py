@@ -112,7 +112,7 @@ class Kiosk(pyglet.window.Window):
         elif symbol == key.C and modifiers & key.MOD_CTRL:
             self.stop()
 
-    def load_images(self, dtime):
+    def load_images(self, dtime=0):
         logger.debug("Load")
 
         # Verify resource drive is available
@@ -180,7 +180,7 @@ class Kiosk(pyglet.window.Window):
 
         self.setup_ui()
         self.setup_gpio()
-        self.load_images(0)
+        self.load_images()
         # pyglet.app.run()
         self.running = True
 
@@ -205,6 +205,6 @@ if __name__ == '__main__':
                 window.dispatch_event('on_draw')
                 window.flip()
     except:
-        logger.debu("Exiting...")
+        logger.debug("Exiting...")
     finally:
         kiosk.stop()
