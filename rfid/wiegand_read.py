@@ -3,6 +3,7 @@
 import logging
 import time
 import sys
+from time import sleep
 
 if 'win' in sys.platform:
     import test_pigpio as pigpio
@@ -18,19 +19,22 @@ class Weigand:
     BYTE_LEN = 8
     CODE_BYTES = 4   # Wiegand26=3, Wiegand34=4
 
-    def __init__(self, pi, gpio_0, gpio_1, callback, reverse_bytes=False, bit_timeout=10):
+    def __init__(self, pi, gpio_0, gpio_1, gpio_beep, gpio_led, callback, reverse_bytes=False, bit_timeout=10):
 
         """
         Instantiate with the pi, gpio for 0 (green wire), the gpio for 1
-        (white wire), the callback function, and the bit timeout in
+        (white wire), the gpio for the buzzer, the gpio for the LED, 
+        the callback function, and the bit timeout in
         milliseconds which indicates the end of a code.
 
         The callback is passed the code length in bits and the value.
         """
 
         self.pi = pi
-        self.gpio_0 = gpio_0
-        self.gpio_1 = gpio_1
+        self.gpio_0 = gpio_0    # Data 0
+        self.gpio_1 = gpio_1    # Data 1
+        self.gpio_beep = gpio_beep  # Buzzer
+        self.gpio_led = gpio_led    # LED
 
         self.callback = callback
         self.bit_timeout = bit_timeout
@@ -40,12 +44,17 @@ class Weigand:
 
         self.pi.set_mode(gpio_0, pigpio.INPUT)
         self.pi.set_mode(gpio_1, pigpio.INPUT)
+        self.pi.set_mode(gpio_beep, pigpio.OUTPUT)
+        self.pi.set_mode(gpio_led, pigpio.OUTPUT)
 
         self.pi.set_pull_up_down(gpio_0, pigpio.PUD_UP)
         self.pi.set_pull_up_down(gpio_1, pigpio.PUD_UP)
 
         self.cb_0 = self.pi.callback(gpio_0, pigpio.FALLING_EDGE, self._cb)
         self.cb_1 = self.pi.callback(gpio_1, pigpio.FALLING_EDGE, self._cb)
+        
+        self.pi.write(gpio_beep, 1)    # Turn off buzzer
+        self.pi.write(gpio_led, 1)    # Turn off Green LED
 
     def _cb(self, gpio, level, tick):
 
@@ -103,7 +112,8 @@ class Weigand:
                     self.in_code = False
                     self.parity_odd = self.num   # should only have one bit at this point
                     logging.debug("PE={}  PO={}".format(self.parity_even, self.parity_odd)) 
-                    if self.get_parity(self.data[:2],0) == self.parity_even and self.get_parity(self.data[2:],1) == self.parity_odd:
+                    # TODO: Fix parity check if using Wiegand26 with 3 bytes
+                    if self._get_parity(self.data[:2],0) == self.parity_even and self._get_parity(self.data[2:],1) == self.parity_odd:
                         if self.reverse_bytes:
                             self.callback(self.bits, self.data[::-1])
                         else:
@@ -118,7 +128,7 @@ class Weigand:
         self.cb_0.cancel()
         self.cb_1.cancel()
 
-    def get_parity(self, data, evenodd):
+    def _get_parity(self, data, evenodd):
         """
         data = [list of bytes to parity check]
         evenodd = 0 if even parity or 1 if odd parity
@@ -128,21 +138,53 @@ class Weigand:
             p += bin(value).count('1')
         return ((p % 2) + evenodd) % 2
 
-    def total(self, values):
-        t = 0
-        for n in values:
-            t = (t << 8) + n
-        return t
+    def total(self, byte_list):
+        total_value = 0
+        for value in byte_list:
+            total_value = (total_value << 8) + value
+        return total_value
+        
+    def beep_auth(self):
+        self.pi.write(self.gpio_led, 0)
+        self.pi.write(self.gpio_beep, 0)
+        sleep(0.17)
+        self.pi.write(self.gpio_beep, 1)
+        sleep(0.02)
+        self.pi.write(self.gpio_beep, 0)
+        sleep(0.17)
+        self.pi.write(self.gpio_beep, 1)
+        self.pi.write(self.gpio_led, 1)
+
+    def beep_noauth(self):
+        self.pi.write(self.gpio_beep, 0)
+        sleep(1.0)
+        self.pi.write(self.gpio_beep, 1)
+
+    def beep_invalid(self):
+        self.pi.write(self.gpio_beep, 0)
+        sleep(1.0)
+        self.pi.write(self.gpio_beep, 1)
+        sleep(0.1)
+        self.pi.write(self.gpio_beep, 0)
+        sleep(1.0)
+        self.pi.write(self.gpio_beep, 1)
+
             
         
 if __name__ == "__main__":
 
     def validate_id(bits, value):
         print("bits={} bytes={} value={}".format(bits, [hex(n) for n in value], w.total(value)))
+        if w.total(value) >  0:
+            sleep(0.5)
+            w.beep_auth()
 
     try:
         pi = pigpio.pi()
-        w = Weigand(pi, 14, 15, validate_id)
+        w = Weigand(pi, 14, 15, 23, 24, validate_id)
+        while True:
+            sleep(60)
+            
     except KeyboardInterrupt:
         pass
     finally:
