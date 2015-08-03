@@ -115,12 +115,9 @@ class Weigand:
                     logging.debug("PE={}  PO={}".format(self.parity_even, self.parity_odd)) 
                     # TODO: Fix parity check if using Wiegand26 with 3 bytes
                     if self._get_parity(self.data[:2],0) == self.parity_even and self._get_parity(self.data[2:],1) == self.parity_odd:
-                        if self.reverse_bytes:
-                            self.callback(self.bits, self.data[::-1])
-                        else:
-                            self.callback(self.bits, self.data)
+                        self.callback(self.total(self.data))
                     else:
-                        self.callback(self.bits, [])
+                        self.callback(0)
 
     def cancel(self):
         """
@@ -174,9 +171,9 @@ class Weigand:
         
 if __name__ == "__main__":
 
-    def validate_id(bits, value):
-        print("bits={} bytes={} value={}".format(bits, [hex(n) for n in value], w.total(value)))
-        if w.total(value) >  0:
+    def validate_id(value):
+        print("value={}".format(value))
+        if value > 0:
             sleep(0.5)
             w.beep_auth()
 

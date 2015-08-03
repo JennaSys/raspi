@@ -29,7 +29,7 @@ class MindBody:
 
         # result=csc.GetAllClients()
 
-    def AddArrival(self, memberId, locationId=1):
+    def AddArrival(self, memberId, locationId=1, test=False):
         result = ClientService.ClientServiceCalls().AddArrival(memberId, locationId)
         if result.ArrivalAdded == True:
             log.info('Client {}: Check-in Location {}'.format(memberId, locationId))
@@ -49,6 +49,10 @@ if __name__ == "__main__":
     # client = mb.GetClients('100014568')
     # print client
     # ci = mb.AddArrival('100014568')
+    # print ci
+    # ci = mb.AddArrival('100015512')
+    # ci = mb.AddArrival('100011642')
+    # ci = mb.AddArrival('2811862964')
     # print ci
     # ci = mb.AddArrival('100012249')
     # print ci
