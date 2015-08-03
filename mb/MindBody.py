@@ -1,5 +1,3 @@
-from suds.client import Client
-import BasicRequestHelper
 import ClientService
 import logging
 # import DebugPrinting
@@ -46,11 +44,6 @@ class MindBody:
         result = ClientService.ClientServiceCalls().GetActiveClientMemberships(memberId)
         return result
 
-    def GetSoapMethods(self, serviceName):
-        url = BasicRequestHelper.BuildWsdlUrl(serviceName)
-        client = Client(url)
-        return client
-
 if __name__ == "__main__":
     mb = MindBody()
     # client = mb.GetClients('100014568')
@@ -61,4 +54,4 @@ if __name__ == "__main__":
     # print ci
     # cm = mb.GetMemberships('100014568')
     # print cm
-    print mb.GetSoapMethods('Client')
+    print ClientService.ClientServiceCalls().GetSoapMethods()

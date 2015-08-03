@@ -7,6 +7,10 @@ class ClientServiceCalls:
 
     """This class contains examples of consumer methods for each ClassService method."""
 
+    def GetSoapMethods(self):
+        url = BasicRequestHelper.BuildWsdlUrl('Client')
+        return Client(url)
+
     """AddArrival Methods"""
 
     def AddArrival(self, clientId, locationId):
