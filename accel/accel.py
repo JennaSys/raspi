@@ -29,6 +29,7 @@ def set_leds(x,y,z):
     GPIO.output(pZ_dn, z<0)
     
 try:
+    
     while True:    
         axes = adxl345.getAxes(True)
         print "ADXL345 on address 0x{:02X}".format(adxl345.address)
