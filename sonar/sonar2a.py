@@ -9,7 +9,6 @@ portEcho = 24
 GPIO.setup(portTrig, GPIO.OUT)
 GPIO.setup(portEcho, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-
 def process_pulse(channel):
     
     if GPIO.input(portEcho):
@@ -18,7 +17,8 @@ def process_pulse(channel):
     else:
         pulse_end = time.time()
         calculate(process_pulse.pulse_start, pulse_end)
-    
+
+  
 def calculate(start, end):
     pulse_duration = end - start
 
@@ -28,7 +28,7 @@ def calculate(start, end):
         distance = (pulse_duration / 2) * 13504
 
         print "Distance: {:0.2f} ({})".format(distance, pulse_duration)
-    
+
     
 GPIO.add_event_detect(portEcho, GPIO.BOTH, callback=process_pulse)
 
