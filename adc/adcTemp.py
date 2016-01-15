@@ -13,7 +13,7 @@ def ReadChannel(channel):
     
 try:    
     while True:
-        raw_data = ReadChannel(1)
+        raw_data = ReadChannel(0)
         millivolts = (raw_data * (VREF * 1000)) / 1024  # 1024=10 Bit data
         tempC = (millivolts - 500) / 10  # 10mv/C   0.5v=0C
         tempF = ((tempC * 9) / 5) + 32

@@ -3,8 +3,8 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-pin_charge = 22
-pin_test= 23
+pin_charge = 13
+pin_test= 19
 
 GPIO.setmode(GPIO.BCM)
 

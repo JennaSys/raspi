@@ -7,7 +7,7 @@ portTrig = 23
 portEcho = 24
 
 GPIO.setup(portTrig, GPIO.OUT)
-GPIO.setup(portEcho, GPIO.IN)
+GPIO.setup(portEcho, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 #reset Trigger and let settle
 GPIO.output(portTrig, False)
