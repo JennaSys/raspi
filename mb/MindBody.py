@@ -1,4 +1,6 @@
 import ClientService
+import SiteService
+import SaleService
 import logging
 # import DebugPrinting
 
@@ -58,4 +60,13 @@ if __name__ == "__main__":
     # print ci
     # cm = mb.GetMemberships('100014568')
     # print cm
-    print ClientService.ClientServiceCalls().GetSoapMethods()
+    # print ClientService.ClientServiceCalls().GetSoapMethods()
+    # SiteService.SiteServiceCalls().GetActivationCode()
+    # client = ClientService.ClientServiceCalls().GetClientsByString('Shee')
+    # client = ClientService.ClientServiceCalls().GetClientIndexes()
+    # client = ClientService.ClientServiceCalls().GetAllClients(2, 10)
+    client = mb.GetClients('005')
+    # client = ClientService.ClientServiceCalls().AddFormulaNoteToClient('004', 'This is a test Formula Note added via the API')
+    print client
+    # sales=SaleService.SaleServiceCalls().GetSales(startSaleDateTime='2015-12-15')
+    # print sales

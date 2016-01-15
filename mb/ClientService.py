@@ -155,8 +155,8 @@ class ClientServiceCalls:
         result = ClientServiceMethods().GetClientsByMultipleIds(ids)
         print str(result)
 
-    def GetAllClients(self):
-        result = ClientServiceMethods().GetAllClients()
+    def GetAllClients(self, page=0, records=25):
+        result = ClientServiceMethods().GetAllClients(page, records)
         print str(result)
 
     def GetClientsByString(self, searchStr):
@@ -492,18 +492,20 @@ class ClientServiceMethods:
 
     """GetClients methods"""
 
-    def GetAllClients(self):
-        return self.GetClientsByString(" ")
+    def GetAllClients(self, page=0, records=25):
+        return self.GetClientsByString(" ", page, records)
 
     def GetClientsBySingleId(self, id):
         return self.GetClientsByMultipleIds([id])
 
-    def GetClientsByString(self, searchStr):
+    def GetClientsByString(self, searchStr, page=0, records=25):
         """Convenience method to find clients containing searchStr in their name or e-mail."""
         request = self.CreateBasicRequest("GetClientsRequest")
 
         # Since SearchText is just a string, we can assign it directly.
         request.SearchText = searchStr
+        request.CurrentPageIndex = page
+        request.PageSize = records
 
         return self.service.service.GetClients(request)
 
