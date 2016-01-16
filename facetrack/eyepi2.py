@@ -10,21 +10,21 @@ class EyePi():
         self.pTiltR = 24
         self.pPanicBtn = 17
 
-        self.pan_minL = 120
-        self.pan_maxL = 230
-        self.tilt_minL = 80
-        self.tilt_maxL = 210
-        self.pan_minR = 80
-        self.pan_maxR = 170
-        self.tilt_minR = 70
-        self.tilt_maxR = 230
+        self.pan_minL = 1200
+        self.pan_maxL = 2300
+        self.tilt_minL = 800
+        self.tilt_maxL = 2100
+        self.pan_minR = 800
+        self.pan_maxR = 1700
+        self.tilt_minR = 700
+        self.tilt_maxR = 2300
 
         #pan_center = ((pan_max - pan_min) / 2) + pan_min
         #tilt_center = ((tilt_max - tilt_min) / 2) + tilt_min
-        self.pan_centerL = 180
-        self.tilt_centerL = 155
-        self.pan_centerR = 126
-        self.tilt_centerR = 160
+        self.pan_centerL = 1800
+        self.tilt_centerL = 1550
+        self.pan_centerR = 1260
+        self.tilt_centerR = 1600
         
         self.inPanic = False
         
@@ -40,9 +40,9 @@ class EyePi():
         
         
     def start(self):
-		if self.pi is not None:
+        if self.pi is None:
             self.pi = pigpio.pi()
-        
+
         self.pi.set_mode(self.pPanL, pigpio.OUTPUT)
         self.pi.set_mode(self.pTiltL, pigpio.OUTPUT)
         self.pi.set_mode(self.pPanR, pigpio.OUTPUT)
@@ -55,10 +55,10 @@ class EyePi():
         self.pi.set_servo_pulsewidth(self.pTiltR, self.tilt_centerR)
         
         self.pi.set_mode(self.pPanicBtn, pigpio.INPUT)
-        self._cb_panic = pi.callback(self.pPanicBtn, pigpio.FALLING_EDGE, self.cb_panic)
+        self._cb_panic = self.pi.callback(self.pPanicBtn, pigpio.FALLING_EDGE, self.cb_panic)
 
     def stop(self):
-		self._cb_panic.cancel()
+        self._cb_panic.cancel()
         self.pi.set_servo_pulsewidth(self.pPanL, 0)
         self.pi.set_servo_pulsewidth(self.pTiltL, 0)
         self.pi.set_servo_pulsewidth(self.pPanR, 0)

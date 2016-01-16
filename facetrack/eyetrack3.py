@@ -4,7 +4,7 @@
 # http://instructables.com/id/Pan-Tilt-face-tracking-with-the-raspberry-pi
 # and various other places
 
-from eyepi import EyePi2
+from eyepi2 import EyePi
 from multiprocessing import Process, Queue
 import time
 import cv2
