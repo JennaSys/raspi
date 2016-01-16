@@ -29,13 +29,16 @@ class EyePi():
         self.inPanic = False
         
         self.pi = None
+        self._cb_panic = None
         
 
-    def cb_panic(self, channel, val):
-        print "PANIC!!!"
+    def cb_panic(self, port, status, tick):
+        print "PANIC!!! ({} {} {})".format(port, status, tick)
         self.inPanic = True
         self.cross_eyed()
         time.sleep(4)
+        self.look_forward()
+        print "Don't Panic"
         self.inPanic = False
         
         
@@ -55,6 +58,7 @@ class EyePi():
         self.pi.set_servo_pulsewidth(self.pTiltR, self.tilt_centerR)
         
         self.pi.set_mode(self.pPanicBtn, pigpio.INPUT)
+        self.pi.set_pull_up_down(self.pPanicBtn, pigpio.PUD_UP)
         self._cb_panic = self.pi.callback(self.pPanicBtn, pigpio.FALLING_EDGE, self.cb_panic)
 
     def stop(self):
@@ -81,8 +85,10 @@ class EyePi():
             panR = int(((self.pan_maxR - self.pan_centerR) * pan_pct) / 100) + self.pan_centerR
         
         print 'PAN=L:{0} ({1}/{2}/{3})  R:{4} ({5}/{6}/{7})'.format(panL, self.pan_minL, self.pan_centerL, self.pan_maxL, panR, self.pan_minR, self.pan_centerR, self.pan_maxR)
-        self.pi.set_servo_pulsewidth(self.pPanL, panL)
-        self.pi.set_servo_pulsewidth(self.pPanR, panR)
+
+        if not self.inPanic:
+            self.pi.set_servo_pulsewidth(self.pPanL, panL)
+            self.pi.set_servo_pulsewidth(self.pPanR, panR)
         
         
 
@@ -100,8 +106,10 @@ class EyePi():
             
         
         print 'TILT=L:{0} ({1}/{2}/{3})  R:{4} ({5}/{6}/{7})'.format(tiltL, self.tilt_minL, self.tilt_centerL, self.tilt_maxL, tiltR, self.tilt_minR, self.tilt_centerR, self.tilt_maxR)
-        self.pi.set_servo_pulsewidth(self.pTiltL, tiltL)
-        self.pi.set_servo_pulsewidth(self.pTiltR, tiltR)
+        
+        if not self.inPanic:
+            self.pi.set_servo_pulsewidth(self.pTiltL, tiltL)
+            self.pi.set_servo_pulsewidth(self.pTiltR, tiltR)
         
 
 
