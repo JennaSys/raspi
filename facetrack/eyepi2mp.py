@@ -90,7 +90,7 @@ class EyePi():
         
         print 'PAN=L:{0} ({1}/{2}/{3})  R:{4} ({5}/{6}/{7})'.format(panL, self.pan_minL, self.pan_centerL, self.pan_maxL, panR, self.pan_minR, self.pan_centerR, self.pan_maxR)
 
-        if not self._inPanic:
+        if not self.inPanic:
             self.pi.set_servo_pulsewidth(self.pPanL, panL)
             self.pi.set_servo_pulsewidth(self.pPanR, panR)
         
@@ -111,7 +111,7 @@ class EyePi():
         
         print 'TILT=L:{0} ({1}/{2}/{3})  R:{4} ({5}/{6}/{7})'.format(tiltL, self.tilt_minL, self.tilt_centerL, self.tilt_maxL, tiltR, self.tilt_minR, self.tilt_centerR, self.tilt_maxR)
         
-        if not self._inPanic:
+        if not self.inPanic:
             self.pi.set_servo_pulsewidth(self.pTiltL, tiltL)
             self.pi.set_servo_pulsewidth(self.pTiltR, tiltR)
         
@@ -145,6 +145,10 @@ class EyePi():
     def look_down(self):
         self.__set_position(self.pTiltL, self.tilt_maxL)
         self.__set_position(self.pTiltR, self.tilt_minR)
+        
+    def __call__(self, fname, *args, **kwds):
+        __callable = {"set_pan":self.set_pan, "set_tilt":self.set_tilt, "inPanic":self.inPanic}
+        return __callable[fname](*args, **kwds)
         
     
     

@@ -4,8 +4,9 @@
 # http://instructables.com/id/Pan-Tilt-face-tracking-with-the-raspberry-pi
 # and various other places
 
-from eyepi2 import EyePi
-from multiprocessing import Process, Queue
+from eyepi2mp import EyePi
+from multiprocessing import Process, Queue, Manager
+from multiprocessing.managers import BaseProxy, BaseManager
 import time
 import cv2
 import logging
@@ -42,6 +43,24 @@ eyes.start()
 #init servos to center
 eyes.look_forward()
 
+
+class EyePiProxy(BaseProxy):
+	def set_pan(self, pan_pct): 
+	    return self._callmethod('set_pan', [pan_pct])
+	def set_tilt(self, tilt_pct):
+	    return self._callmethod('set_tilt', [tilt_pct])
+	def inPanic(self):	
+	    return self._callmethod('inPanic', [])
+
+class EyePiManager(BaseManager):
+    pass
+    
+manager = EyePiManager()
+manager.register('share_eyepi', eyes, proxytype=EyePiProxy, exposed = ('set_pan', 'set_tilt', 'inPanic'))
+manager.start()
+eyepi_proxy = manager.share_eyepi("eyepi")		
+
+
 ServoPanCP = Queue()    # Servo zero current position, sent by subprocess and read by main process
 ServoTiltCP = Queue()   # Servo one current position, sent by subprocess and read by main process
 ServoPanDP = Queue()    # Servo zero desired position, sent by main and read by subprocess
@@ -52,8 +71,7 @@ ServoTiltS = Queue()    # Servo one speed, sent by main and read by subprocess
 cv2.cv.NamedWindow("video", cv2.cv.CV_WINDOW_AUTOSIZE)
 
 
-def P0():   # Process 0 controlls Pan servo
-    global eyes
+def P0(eyepi_proxy):   # Process 0 controlls Pan servo
     speed = .1      # Here we set some defaults:
     _ServoPanCP = 1     # by making the current position and desired position unequal,-
     _ServoPanDP = 0     #   we can be sure we know where the servo really is. (or will be soon)
@@ -72,14 +90,13 @@ def P0():   # Process 0 controlls Pan servo
         else:                           # if ServoPanCP != ServoPanDP
             _ServoPanCP = _ServoPanDP                       # incriment ServoPanCP down by one
             ServoPanCP.put(_ServoPanCP)                 # move the servo that little bit
-            eyes.set_pan(_ServoPanCP)
+            eyepi_proxy.set_pan(_ServoPanCP)
 
             if not ServoPanCP.empty():              # throw away the old ServoPanCP value,-
                 trash = ServoPanCP.get()                #   it's no longer relevent
             
 
-def P1():   # Process 1 controlls Tilt servo using same logic as above
-    global eyes
+def P1(eyepi_proxy):   # Process 1 controlls Tilt servo using same logic as above
     speed = .1
     _ServoTiltCP = 1
     _ServoTiltDP = 0
@@ -98,15 +115,15 @@ def P1():   # Process 1 controlls Tilt servo using same logic as above
         else:
             _ServoTiltCP =  _ServoTiltDP
             ServoTiltCP.put(_ServoTiltCP)
-            eyes.set_tilt(_ServoTiltCP)
+            eyepi_proxy.set_tilt(_ServoTiltCP)
 
             if not ServoTiltCP.empty():
                 trash = ServoTiltCP.get()
 
 
 
-Process(target=P0, args=()).start() # Start the subprocesses
-Process(target=P1, args=()).start() #
+Process(target=P0, args=(eyepi_proxy)).start() # Start the subprocesses
+Process(target=P1, args=(eyepi_proxy)).start() #
 time.sleep(1)               # Wait for them to start
 
 #====================================================================================================
