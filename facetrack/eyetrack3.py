@@ -168,7 +168,7 @@ try:
             currTilt = 0
             face_x = 0
             face_y = 0
-            if not eyes.inPanic:
+            if not eyes.inPanic():
                 eyes.look_forward()
     
         x,y,w,h = face        

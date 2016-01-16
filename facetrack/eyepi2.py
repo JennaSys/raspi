@@ -26,20 +26,23 @@ class EyePi():
         self.pan_centerR = 1260
         self.tilt_centerR = 1600
         
-        self.inPanic = False
+        self._inPanic = False
         
         self.pi = None
         self._cb_panic = None
         
 
+	def inPanic():
+		return self._inPanic
+
     def cb_panic(self, port, status, tick):
         print "PANIC!!! ({} {} {})".format(port, status, tick)
-        self.inPanic = True
+        self._inPanic = True
         self.cross_eyed()
         time.sleep(4)
         self.look_forward()
         print "Don't Panic"
-        self.inPanic = False
+        self._inPanic = False
         
         
     def start(self):
