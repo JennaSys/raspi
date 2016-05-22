@@ -1,3 +1,4 @@
+from pip._vendor.requests.api import request
 from suds.client import Client
 import BasicRequestHelper
 from datetime import datetime
@@ -51,14 +52,18 @@ class ClassServiceCalls:
                              staffIds=None,
                              locationId=None,
                              startClassDateTime=datetime.today(),
-                             endClassDateTime=datetime.today()):
+                             endClassDateTime=datetime.today(),
+                             fields=None):
         result = ClassServiceMethods().GetClassDescriptions(classDescId,
                                                             programId,
                                                             staffIds,
                                                             locationId,
                                                             startClassDateTime,
-                                                            endClassDateTime)
-        print str(result)
+                                                            endClassDateTime,
+                                                            fields)
+        # print str(result)
+        return result
+
 
     """GetClasses Methods"""
 
@@ -116,7 +121,8 @@ class ClassServiceCalls:
 
     def GetClassVisits(self, classId):
         result = ClassServiceMethods().GetClassVisits(classId)
-        print str(result)
+        # print str(result)
+        return result
 
     """GetCourses Methods"""
 
@@ -281,7 +287,8 @@ class ClassServiceMethods:
                              staffIds,
                              locationIds,
                              startClassDateTime,
-                             endClassDateTime):
+                             endClassDateTime,
+                             fields):
         """Note that although this call accepts arrays for all ID fields, it only uses the first value in each array."""
         request = self.CreateBasicRequest("GetClassDescriptions")
 
@@ -292,6 +299,12 @@ class ClassServiceMethods:
         request.LocationIDs = BasicRequestHelper.FillArrayType(self.service, locationIds, "Int")
         request.StartClassDateTime = startClassDateTime
         request.EndClassDateTime = endClassDateTime
+        if fields is not None:
+            f = self.service.factory.create("ArrayOfString")
+            f.string = fields
+            request.Fields = f
+            request.XMLDetail = "Basic"
+        request.PageSize = 1000
 
         return self.service.service.GetClassDescriptions(request)
 

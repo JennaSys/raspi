@@ -1,3 +1,5 @@
+from unittest import result
+
 from suds.client import Client
 import BasicRequestHelper
 from datetime import datetime
@@ -103,15 +105,18 @@ class ClientServiceCalls:
                              staffIds=None,
                              systemGenerated=False,
                              typeIds=None,
-                             subtypeIds=None):
+                             subtypeIds=None,
+                             fields=None):
         result = ClientServiceMethods().GetClientContactLogs(clientId,
                                                              startDate,
                                                              endDate,
                                                              staffIds,
                                                              systemGenerated,
                                                              typeIds,
-                                                             subtypeIds)
-        print str(result)
+                                                             subtypeIds,
+                                                             fields)
+        # print str(result)
+        return result
 
     """GetClientContracts Methods"""
 
@@ -151,9 +156,10 @@ class ClientServiceCalls:
         # print str(result)
         return result
 
-    def GetClientsByMultipleIds(self, ids):
-        result = ClientServiceMethods().GetClientsByMultipleIds(ids)
-        print str(result)
+    def GetClientsByMultipleIds(self, ids, fields=None):
+        result = ClientServiceMethods().GetClientsByMultipleIds(ids, fields)
+        # print str(result)
+        return result
 
     def GetAllClients(self, page=0, records=25):
         result = ClientServiceMethods().GetAllClients(page, records)
@@ -218,7 +224,8 @@ class ClientServiceCalls:
                                                         startDate,
                                                         endDate,
                                                         unpaidsOnly)
-        print str(result)
+        # print str(result)
+        return result
 
     """GetContactLogTypes Methods"""
 
@@ -411,7 +418,8 @@ class ClientServiceMethods:
                              staffIds,
                              systemGenerated,
                              typeIds,
-                             subtypeIds):
+                             subtypeIds,
+                             fields):
         request = self.CreateBasicRequest("GetClientContactLogsRequest")
 
         request.ClientID = clientId
@@ -421,6 +429,12 @@ class ClientServiceMethods:
         request.ShowSystemGenerated = systemGenerated
         request.TypeIDs = typeIds
         request.SubtypeIDs = subtypeIds
+        if fields is not None:
+            f = self.service.factory.create("ArrayOfString")
+            f.string = fields
+            request.Fields = f
+            request.XMLDetail = "Basic"
+        request.PageSize = 200
 
         return self.service.service.GetClientContactLogs(request)
 
@@ -431,6 +445,7 @@ class ClientServiceMethods:
                                          datetime.today(),
                                          None,
                                          systemGenerated,
+                                         None,
                                          None,
                                          None)
 
@@ -487,6 +502,7 @@ class ClientServiceMethods:
         request.StartDate = startDate
         request.EndDate = endDate
         request.UnpaidsOnly = unpaidsOnly
+        request.PageSize = 1000
 
         return self.service.service.GetClientVisits(request)
 
@@ -509,7 +525,7 @@ class ClientServiceMethods:
 
         return self.service.service.GetClients(request)
 
-    def GetClientsByMultipleIds(self, ids):
+    def GetClientsByMultipleIds(self, ids, fields=None):
         request = self.CreateBasicRequest("GetClientsRequest")
 
         """Here, we create an instance of ArrayOfString (the type of ClientIDs in
@@ -517,8 +533,13 @@ class ClientServiceMethods:
         clientIDs = self.service.factory.create("ArrayOfString")
         clientIDs.string = ids
         request.ClientIDs = clientIDs
-
-        return self.service.service.GetClients(request)
+        if fields is not None:
+            f = self.service.factory.create("ArrayOfString")
+            f.string = fields
+            request.Fields = f
+            request.XMLDetail = "Basic"
+        result = self.service.service.GetClients(request)
+        return result
 
     """GetClientSchedule methods"""
 

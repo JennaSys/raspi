@@ -23,7 +23,8 @@ class SiteServiceCalls():
 
     def GetPrograms(self, scheduleType="All", onlineOnly=False):
         result = SiteServiceMethods().GetPrograms(scheduleType, onlineOnly)
-        print str(result)
+        # print str(result)
+        return result
 
     """GetRelationships Methods"""
 
@@ -88,6 +89,7 @@ class SiteServiceMethods():
         request.ScheduleType = BasicRequestHelper.SetEnumerable(
             self.service, "ScheduleType", scheduleType)
         request.OnlineOnly = onlineOnly
+        request.PageSize = 1000
 
         return self.service.service.GetPrograms(request)
 
