@@ -86,6 +86,14 @@ class MindBody:
         clients = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, [client], "Client", "Client")
         return clients
 
+    def get_programs(self):
+        ssc = SiteService.SiteServiceCalls()
+        progs_raw = ssc.GetPrograms()
+        progs = {}
+        for p in progs_raw.Programs[0]:
+            progs[p.ID] = p.Name
+        return progs
+
     def get_class_list(self):
         # ssc = SiteService.SiteServiceCalls()
         # progs_raw = ssc.GetPrograms()
@@ -110,12 +118,23 @@ class MindBody:
         visits_raw = csc.GetClientVisits(mID, '2010-01-01')
 
         visits = {}
-        for v in visits_raw.Visits[0]:
-            if v.SignedIn and v.ClassID != 0 and v.Name not in ["Member's Social"]:
-                # class_instance = ClassService.ClassServiceCalls().GetClassVisits(v.ClassID)
-                visits[v.Name] = v.StartDateTime
+        if visits_raw.ResultCount > 0:
+            for v in visits_raw.Visits[0]:
+                if v.SignedIn and v.ClassID != 0 and v.Name not in ["Member's Social"]:
+                    # class_instance = ClassService.ClassServiceCalls().GetClassVisits(v.ClassID)
+                    visits[v.Name] = (v.StartDateTime, self.get_class_code_from_name(v.Name))
 
         return visits
+
+    def get_class_code_from_name(self, name):
+        if name[:9].find(" - ") > 0:
+            return name[:name.find(" - ")]
+        elif name[:9].find(u' \u2013 ') > 0:
+            return name[:name.find(u' \u2013 ')]
+        # elif name[:9].find(' ') > 0:
+        #     return name[:name.find(' ')]
+        else:
+            return ''
 
     def get_contact_logs(self, mID):
         csc = ClientService.ClientServiceCalls()
@@ -129,6 +148,7 @@ class MindBody:
                 logs[log.CreatedDateTime] = Log(log.ContactMethod, log.ContactName, log.Text)
 
         return logs
+
 
 if __name__ == "__main__":
     mb = MindBody()
@@ -167,18 +187,27 @@ if __name__ == "__main__":
 
     # classes = mb.get_class_list()
     # print len(classes)
-    # for c in sorted(classes.itervalues()):
-    #     print c
+    # # for c in sorted(classes.itervalues()):
+    # for id, c in sorted(classes.iteritems(), key=lambda x: x[1]):
+    #     print u"{0}|{1}|{2}".format(id,c, mb.get_class_code_from_name(c))
 
     # classes = ClientService.ClientServiceCalls().GetClientVisits('004','2010-01-01')
-    # classes = mb.get_classes('004')
+    # classes = mb.get_classes('356')
     # for c in sorted(classes):
-    #     print "{0} ({1:%Y-%m-%d})".format(c, classes[c])
+    #     print "{0} ({1:%Y-%m-%d}) [{2}])".format(c, classes[c][0], classes[c][1])
 
-    logs = mb.get_contact_logs('004')
-    for log in sorted(logs):
-        print "{0:%Y-%m-%d} {1}".format(log, logs[log])
+    # logs = mb.get_contact_logs('004')
+    # for log in sorted(logs):
+    #     print "{0:%Y-%m-%d} {1}".format(log, logs[log])
 
+    # ClientService.ClientServiceCalls().GetClientServices(clientId='356', programIds=mb.get_programs().keys())
 
+    # programs = mb.get_programs()
+    # for p in programs:
+    #     print p, programs[p]
+
+    referrals=ClientService.ClientServiceCalls().GetClientReferralTypes()
+    for r in referrals.ReferralTypes[0]:
+        print r
 
 

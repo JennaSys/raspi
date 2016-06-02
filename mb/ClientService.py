@@ -147,7 +147,9 @@ class ClientServiceCalls:
 
     def GetClientReferralTypes(self):
         result = ClientServiceMethods().GetClientReferralTypes()
-        print str(result)
+        # print str(result)
+        return result
+
 
     """GetClients Methods"""
 
