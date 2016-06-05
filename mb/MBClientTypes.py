@@ -7,7 +7,8 @@ from selenium.webdriver.common.by import By
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+# log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 logging.getLogger('selenium.webdriver.remote.remote_connection').setLevel(logging.INFO)
 
 

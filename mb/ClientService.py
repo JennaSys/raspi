@@ -33,7 +33,8 @@ class ClientServiceCalls:
 
     def AddOrUpdateClients(self, updateAction="Fail", test=False, clients=None):
         result = ClientServiceMethods().AddOrUpdateClients(updateAction, test, clients)
-        print str(result)
+        # print str(result)
+        return result
 
     def AddCreditCardToClient(self, clientId, cc):
         """A consumer method for adding a credit card to a client's information.
@@ -153,8 +154,8 @@ class ClientServiceCalls:
 
     """GetClients Methods"""
 
-    def GetClientsBySingleId(self, id):
-        result = ClientServiceMethods().GetClientsBySingleId(id)
+    def GetClientsBySingleId(self, id, fields=None):
+        result = ClientServiceMethods().GetClientsBySingleId(id, fields)
         # print str(result)
         return result
 
@@ -513,8 +514,8 @@ class ClientServiceMethods:
     def GetAllClients(self, page=0, records=25):
         return self.GetClientsByString(" ", page, records)
 
-    def GetClientsBySingleId(self, id):
-        return self.GetClientsByMultipleIds([id])
+    def GetClientsBySingleId(self, id, fields):
+        return self.GetClientsByMultipleIds([id], fields)
 
     def GetClientsByString(self, searchStr, page=0, records=25):
         """Convenience method to find clients containing searchStr in their name or e-mail."""

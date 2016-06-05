@@ -173,11 +173,11 @@ if __name__ == "__main__":
     # client = ClientService.ClientServiceCalls().GetClientsByString('Shee')
     # client = ClientService.ClientServiceCalls().GetClientIndexes()
     # client = ClientService.ClientServiceCalls().GetAllClients(2, 10)
-    # client = mb.get_clients('004',)
+    client = mb.get_clients('004',)
     # client = mb.get_clients('1545',)
     # client = mb.get_clients('100015655')
     # client = ClientService.ClientServiceCalls().AddFormulaNoteToClient('004', 'This is a test Formula Note added via the API')
-    # print client
+    print client
     # print sales
     # c = mb.make_clients("Brown", "Chuckie", "cbrown@peanuts.com","Male", "1970-01-01")
     # print c
@@ -206,8 +206,8 @@ if __name__ == "__main__":
     # for p in programs:
     #     print p, programs[p]
 
-    referrals=ClientService.ClientServiceCalls().GetClientReferralTypes()
-    for r in referrals.ReferralTypes[0]:
-        print r
+    # referrals=ClientService.ClientServiceCalls().GetClientReferralTypes()
+    # for r in referrals.ReferralTypes[0]:
+    #     print r
 
-
+    # print SiteService.SiteServiceCalls().GetMobileProviders()

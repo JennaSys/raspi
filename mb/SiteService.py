@@ -58,6 +58,12 @@ class SiteServiceCalls():
         print str(result)
 
 
+    """GetMobileProviders methods"""
+    def GetMobileProviders(self):
+        result = SiteServiceMethods().GetMobileProviders()
+        return str(result)
+
+
 class SiteServiceMethods():
 
     """This class contains producer methods for all SiteService methods."""
@@ -132,3 +138,9 @@ class SiteServiceMethods():
         request.RelatedSiteID = relatedSiteId
 
         return self.service.service.GetSites(request)
+
+    """GetMobileProviders methods"""
+    def GetMobileProviders(self):
+        request = self.CreateBasicRequest("GetMobileProviders")
+
+        return self.service.service.GetMobileProviders(request)
