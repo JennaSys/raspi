@@ -17,8 +17,8 @@ log.setLevel(logging.DEBUG)
 
 
 class MindBody:
-    def get_clients(self, memberId):
-        csc = ClientService.ClientServiceCalls()
+    def get_clients(self, memberId, site_id):
+        csc = ClientService.ClientServiceCalls(site_id)
         # result=csc.GetClientsBySingleId('100012249')
         # result=csc.GetClientsBySingleId('100015575')
         # result = csc.GetClientsBySingleId('100014568')
@@ -173,7 +173,8 @@ if __name__ == "__main__":
     # client = ClientService.ClientServiceCalls().GetClientsByString('Shee')
     # client = ClientService.ClientServiceCalls().GetClientIndexes()
     # client = ClientService.ClientServiceCalls().GetAllClients(2, 10)
-    client = mb.get_clients('004',)
+    client = mb.get_clients('004',41095)
+    # client = mb.get_clients('100011834',)
     # client = mb.get_clients('1545',)
     # client = mb.get_clients('100015655')
     # client = ClientService.ClientServiceCalls().AddFormulaNoteToClient('004', 'This is a test Formula Note added via the API')
