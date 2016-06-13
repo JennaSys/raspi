@@ -76,6 +76,10 @@ class ClientServiceCalls:
 
     """AddOrUpdateContactLogs Methods"""
 
+    def AddContactLogs(self, clientId, logs):
+        result = ClientServiceMethods(self.site_id).AddContactLogs(clientId, logs)
+        return result
+
     def UpdateContactLogText(self, clientId, text):
         result = ClientServiceMethods(self.site_id).UpdateContactLogText(clientId, text)
         print str(result)
@@ -237,7 +241,8 @@ class ClientServiceCalls:
 
     def GetContactLogTypes(self):
         result = ClientServiceMethods(self.site_id).GetContactLogTypes()
-        print str(result)
+        # print str(result)
+        return result
 
     """GetCustomClientFields Methods"""
 
@@ -247,10 +252,11 @@ class ClientServiceCalls:
            format than the returned XML."""
         result = ClientServiceMethods(self.site_id).GetCustomClientFields()
 
-        print "ID - Name"
-        print "------------------------------"
-        for field in result.CustomClientFields.CustomClientField:
-            print "%2d - %s" % (field.ID, field.Name)
+        # print "ID - Name"
+        # print "------------------------------"
+        # for field in result.CustomClientFields.CustomClientField:
+        #     print "%2d - %s" % (field.ID, field.Name)
+        return result
 
     """GetRequiredClientFields Methods"""
 
@@ -370,8 +376,16 @@ class ClientServiceMethods:
 
     """AddOrUpdateContactLogs methods"""
 
+    def AddContactLogs(self, clientId, logs):
+        request = self.CreateBasicRequest("AddOrUpdateContactLogs")
+        request.UpdateAction = "AddNew"
+        request.Test = False
+        request.ContactLogs = logs
+
+        return self.service.service.AddOrUpdateContactLogs(request)
+
     def UpdateContactLogText(self, clientId, text):
-        """This method will change the text of every contact log 
+        """This method will change the text of every contact log
            applied to clientId in the past year to text."""
         request = self.CreateBasicRequest("AddOrUpdateContactLogs")
 

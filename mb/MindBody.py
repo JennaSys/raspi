@@ -110,11 +110,11 @@ class MindBody:
 
         return classes
 
-    def get_classes(self, mID):
+    def get_classes(self, mID, site_id):
 
         # classes = self.get_class_list()
 
-        csc = ClientService.ClientServiceCalls()
+        csc = ClientService.ClientServiceCalls(site_id)
         visits_raw = csc.GetClientVisits(mID, '2010-01-01')
 
         visits = {}
@@ -136,8 +136,8 @@ class MindBody:
         else:
             return ''
 
-    def get_contact_logs(self, mID):
-        csc = ClientService.ClientServiceCalls()
+    def get_contact_logs(self, mID, site_id):
+        csc = ClientService.ClientServiceCalls(site_id)
         logs_raw = csc.GetClientContactLogs(clientId=mID, startDate='2010-01-01', endDate='2020-01-01')
 
         logs = {}
@@ -173,12 +173,12 @@ if __name__ == "__main__":
     # client = ClientService.ClientServiceCalls().GetClientsByString('Shee')
     # client = ClientService.ClientServiceCalls().GetClientIndexes()
     # client = ClientService.ClientServiceCalls().GetAllClients(2, 10)
-    client = mb.get_clients('004',41095)
+    # client = mb.get_clients('004',41095)
     # client = mb.get_clients('100011834',)
     # client = mb.get_clients('1545',)
     # client = mb.get_clients('100015655')
     # client = ClientService.ClientServiceCalls().AddFormulaNoteToClient('004', 'This is a test Formula Note added via the API')
-    print client
+    # print client
     # print sales
     # c = mb.make_clients("Brown", "Chuckie", "cbrown@peanuts.com","Male", "1970-01-01")
     # print c
@@ -193,11 +193,11 @@ if __name__ == "__main__":
     #     print u"{0}|{1}|{2}".format(id,c, mb.get_class_code_from_name(c))
 
     # classes = ClientService.ClientServiceCalls().GetClientVisits('004','2010-01-01')
-    # classes = mb.get_classes('356')
+    # classes = mb.get_classes('356', 41095)
     # for c in sorted(classes):
-    #     print "{0} ({1:%Y-%m-%d}) [{2}])".format(c, classes[c][0], classes[c][1])
+    #     print "{0} ({1:%Y-%m-%d}) [{2}]".format(c, classes[c][0], classes[c][1])
 
-    # logs = mb.get_contact_logs('004')
+    # logs = mb.get_contact_logs('004', 41095)
     # for log in sorted(logs):
     #     print "{0:%Y-%m-%d} {1}".format(log, logs[log])
 
@@ -212,3 +212,6 @@ if __name__ == "__main__":
     #     print r
 
     # print SiteService.SiteServiceCalls().GetMobileProviders()
+    # log_types = ClientService.ClientServiceCalls(293010).GetContactLogTypes()
+    log_types = ClientService.ClientServiceCalls(-99).GetContactLogTypes()
+    print log_types
