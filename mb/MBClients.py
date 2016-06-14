@@ -176,3 +176,29 @@ class MBClients:
             return client.Clients.Client[0].CustomClientFields[0]
         else:
             return None
+
+    def add_custom_fields(self, client_id, custom_fields):
+        if custom_fields is not None:
+            new_field_list = []
+            for field_name in ['Employer', 'Occupation', 'Referral']:
+                # for field_name in ['Company', 'Position']:
+                # print self.get_custom_field_id(field_name)
+                if field_name in [field['Name'] for field in custom_fields]:
+                    # print "{0}={1}".format(field_name, [f for f in custom_fields if field_name in f['Name']][0]['Value'])
+                    field_id = self.get_custom_field_id(field_name)
+                    custom_field = {'ID':field_id, 'Value':[f for f in custom_fields if field_name in f['Name']][0]['Value']}
+                    new_field_list.append(custom_field)
+
+            if len(new_field_list) > 0:
+                new_fields = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, new_field_list, "CustomClientField", "CustomClientField")
+                client = {}
+                client['ID'] = client_id
+                client['Action'] = "None"
+                client['CustomClientFields'] = new_fields
+                clients = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, [client], "Client", "Client")
+                result = ClientService.ClientServiceCalls(self.site_id).AddOrUpdateClients('Update', False, clients)
+                return result
+            else:
+                return None
+
+

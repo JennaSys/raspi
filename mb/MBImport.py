@@ -53,12 +53,9 @@ if __name__ == "__main__":
     # for log in logs:
     #     print log, logs[log]
     # print MBI.MBC_new.get_contactlog_mbtransfer_typeid()
+
     custom_fields = MBI.MBC_old.get_client_custom_fields('100012186')
-    print custom_fields
-    print "Employer=" + ([f for f in custom_fields if 'Employer' in f['Name']][0]['Value'])
-    print "Position=" + ([f for f in custom_fields if 'Occupation' in f['Name']][0]['Value'])
-    print MBI.MBC_new.get_custom_field_id('Employer')
-    print MBI.MBC_new.get_custom_field_id('Occupation')
+    MBI.MBC_new.add_custom_fields('100011834', custom_fields)
 
     # client = MBI.MBC.get_client('004')
     # client = MBI.import_client('100014533')
