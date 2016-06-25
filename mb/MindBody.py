@@ -170,15 +170,16 @@ if __name__ == "__main__":
     # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100015431'])
     # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100015655'], ['Clients.FirstName','Clients.LastName'])
     # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100015431'], ['Clients.CustomClientFields','Clients.ClientCreditCard','Clients.ClientIndexes','Clients.EmergencyContactInfoName','Clients.RedAlert'])
+    client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100012186'], ['Clients.ClientIndexes'])
     # client = ClientService.ClientServiceCalls().GetClientsByString('Shee')
-    # client = ClientService.ClientServiceCalls().GetClientIndexes()
+    client2 = ClientService.ClientServiceCalls().GetClientIndexes()
     # client = ClientService.ClientServiceCalls().GetAllClients(2, 10)
     # client = mb.get_clients('004',41095)
     # client = mb.get_clients('100011834',)
     # client = mb.get_clients('1545',)
     # client = mb.get_clients('100015655')
     # client = ClientService.ClientServiceCalls().AddFormulaNoteToClient('004', 'This is a test Formula Note added via the API')
-    # print client
+    print client
     # print sales
     # c = mb.make_clients("Brown", "Chuckie", "cbrown@peanuts.com","Male", "1970-01-01")
     # print c
@@ -213,5 +214,5 @@ if __name__ == "__main__":
 
     # print SiteService.SiteServiceCalls().GetMobileProviders()
     # log_types = ClientService.ClientServiceCalls(293010).GetContactLogTypes()
-    log_types = ClientService.ClientServiceCalls(-99).GetContactLogTypes()
-    print log_types
+    # log_types = ClientService.ClientServiceCalls(-99).GetContactLogTypes()
+    # print log_types

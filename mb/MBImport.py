@@ -34,7 +34,6 @@ class MBImport:
         new_client["LastName"] = 'zzz_' + client["LastName"]
         if 'Username' in client:
             new_client["Username"] = 'z' + client["Username"]
-
         # Field data overwrites
             new_client["Password"] = client["FirstName"] + client["PostalCode"]
         new_client["Notes"] = self.MBC_old.get_class_history(client_id) + client["Notes"]
@@ -43,8 +42,8 @@ class MBImport:
 
 
 if __name__ == "__main__":
-    MBI = MBImport(-99, -99)
-    # MBI = MBImport(41095, 293010)
+    # MBI = MBImport(-99, -99)
+    MBI = MBImport(41095, 293010)
     # print MBI.MBC_old.get_class_history('356')
     # logs = MBI.MBC_old.get_contact_logs('004')
     # logs = MBI.MBC_old.get_contact_logs('100011834')
@@ -54,10 +53,18 @@ if __name__ == "__main__":
     #     print log, logs[log]
     # print MBI.MBC_new.get_contactlog_mbtransfer_typeid()
 
-    custom_fields = MBI.MBC_old.get_client_custom_fields('100012186')
-    MBI.MBC_new.add_custom_fields('100011834', custom_fields)
+    # custom_fields = MBI.MBC_old.get_client_custom_fields('100012186')
+    # MBI.MBC_new.add_custom_fields('100011834', custom_fields)
+    # TESTING
+    # MBI.MBC_old.update_custom_field('100012186','Referral','100011834')
+    # MBI.MBC_new.update_custom_field('100011834','Referral','100012186')
+    # MBI.MBC_old.update_custom_field('100012186','New ID','100011834')
+    # MBI.MBC_new.update_custom_field('100011834','Original ID','100012186')
 
     # client = MBI.MBC.get_client('004')
+    # client = MBI.MBC_old.get_client_indexes('100011834')
+    client = MBI.MBC_old.get_client_interests('004')
+    print client
     # client = MBI.import_client('100014533')
     # client = MBI.import_client('100011834')
 

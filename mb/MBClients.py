@@ -14,6 +14,57 @@ class MBClients:
         else:
             return None
 
+    def get_client_indexes(self, client_id):
+        client =  ClientService.ClientServiceCalls(self.site_id).GetClientsBySingleId(client_id,['Clients.ClientIndexes'])
+        if len(client.Clients.Client) > 0:
+            return client.Clients.Client[0]
+        else:
+            return None
+
+    def get_client_interests(self, client_id):
+        index_map = self.get_client_index_map()
+        interests = []
+        raw_indexes = self.get_client_indexes(client_id)
+        if len(raw_indexes.ClientIndexes) > 0:
+            for idx in raw_indexes.ClientIndexes[0]:
+                if idx.Name in ["Interests", "2nd Interest"]:
+                    if idx.Values.ClientIndexValue[0].Name != "Not Assigned":
+                        if index_map[idx.Values.ClientIndexValue[0].Name] not in interests:
+                            interests.append(index_map[idx.Values.ClientIndexValue[0].Name])
+                elif idx.Name in index_map.keys():
+                    if idx.Values[0][0].Name == "YES":
+                        if index_map[idx.Name] not in interests:
+                            interests.append(index_map[idx.Name])
+        return interests
+
+    def get_client_index_map(self):
+        index_map = {
+            "Interested in 3D Printing/Scanning":"01 - Interest",
+            "Interested in CAD/CAM & Graphics":"02 - Interest",
+            "Interested in Costume & Props":"03 - Interest",
+            "Interested in Electronics & Robotics":"05 - Interest",
+            "Interested in Laser Cut & Engrave":"08 - Interest",
+            "Interested in Machine Shop":"09 - Interest",
+            "Interested in Plastics & Composites":"10 - Interest",
+            "Interested in Programing & Coding":"11 - Interest",
+            "Interested in Sewing & Textiles":"12 - Interest",
+            "Interested in Welding/Fabrication":"14 - Interest",
+            "Interested in Wood Shop":"15 - Interest",
+            "Interested in Weekend Cosplay Workshops":"03 - Interest",
+            "Interested in Weekend Wielding/Fab Workshops":"14 - Interest",
+            "3D Printing":"01 - Interest",
+            "CAD/CAM & Graphics":"02 - Interest",
+            "Costume & Props":"03 - Interest",
+            "Electronics & Robotics":"05 - Interest",
+            "Laser Cut & Engrave":"08 - Interest",
+            "Machine Shop":"09 - Interest",
+            "Plastics & Composites":"10 - Interest",
+            "Programming & Coding":"11 - Interest",
+            "Sewing & Textiles":"12 - Interest",
+            "Welding/Fabrication":"14 - Interest",
+            "Wood Shop":"15 - Interest"}
+        return index_map
+
     def add_client(self, client):
         client['Action'] = "None"
         loc = BasicRequestHelper.FillAbstractObject(ClientService.ClientServiceMethods.service, "Location", {"ID": 1, "Action": "None"})
@@ -200,5 +251,19 @@ class MBClients:
                 return result
             else:
                 return None
+
+
+    def update_custom_field(self, client_id, field_name, field_value):
+        field_id = self.get_custom_field_id(field_name)
+        custom_field = [{'ID': field_id,
+                        'Value': field_value}]
+        field_list = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, custom_field, "CustomClientField", "CustomClientField")
+        client = {}
+        client['ID'] = client_id
+        client['Action'] = "None"
+        client['CustomClientFields'] = field_list
+        clients = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, [client], "Client", "Client")
+        result = ClientService.ClientServiceCalls(self.site_id).AddOrUpdateClients('Update', False, clients)
+        return result
 
 

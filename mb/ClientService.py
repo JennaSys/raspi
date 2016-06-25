@@ -560,7 +560,7 @@ class ClientServiceMethods:
             f = self.service.factory.create("ArrayOfString")
             f.string = fields
             request.Fields = f
-            request.XMLDetail = "Basic"
+            # request.XMLDetail = "Basic"
         result = self.service.service.GetClients(request)
         return result
 
