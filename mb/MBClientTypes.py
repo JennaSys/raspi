@@ -3,10 +3,12 @@ from selenium.webdriver import Chrome # pip install selenium
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-log = logging.getLogger()
+# log = logging.getLogger()
+log = logging.getLogger('MBImport')
 # log.setLevel(logging.DEBUG)
 log.setLevel(logging.INFO)
 logging.getLogger('selenium.webdriver.remote.remote_connection').setLevel(logging.INFO)
@@ -16,7 +18,7 @@ class MBClientTypes:
     def __init__(self, site_id, client_types=None):
         self.client_types = client_types
 
-        self.main_url = 'https://clients.mindbodyonline.com/classic/home?studioid=' + site_id
+        self.main_url = 'https://clients.mindbodyonline.com/classic/home?studioid={}'.format(site_id)
         self.client_url = 'https://clients.mindbodyonline.com/asp/adm/adm_clt_profile.asp?id='
 
     def update_client_types(self, client_id, selected_types):
@@ -52,9 +54,13 @@ class MBClientTypes:
 
             # Check off types
             for client_type in selected_types:
-                elem = browser.find_element_by_xpath(".//*[contains(text(), '" + client_type + "')]")
-                if not browser.find_element_by_name(elem.get_attribute('for')).is_selected():
-                    elem.click()
+                try:
+                    elem = browser.find_element_by_xpath(".//*[contains(text(), '" + client_type + "')]")
+                    if not browser.find_element_by_name(elem.get_attribute('for')).is_selected():
+                        elem.click()
+                except NoSuchElementException:
+                    log.warn("Unable to locate Client Type '{}'".format(client_type))
+
             browser.find_element_by_name('updateType').click()
             WebDriverWait(browser, timeout=10).until(EC.presence_of_element_located((By.ID, 'clienttypes')))
             log.debug('client types saved!')

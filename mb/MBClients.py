@@ -1,8 +1,13 @@
 import ClientService
 import BasicRequestHelper
-import csv
+
+import MBClientTypes
 
 from collections import namedtuple
+import csv
+import logging
+
+log = logging.getLogger('MBImport')
 
 
 class MBClients:
@@ -191,14 +196,14 @@ class MBClients:
 
         logs = {}
         Log = namedtuple('Log','ContactMethod ContactName Text CreatedDateTime CreatedBy FollowupByDate AssignedTo')
-        for log in logs_raw.ContactLogs[0]:
-            if log.CreatedBy.Name not in ["System Generated"]:
+        for contact_log in logs_raw.ContactLogs[0]:
+            if contact_log.CreatedBy.Name not in ["System Generated"]:
                 # class_instance = ClassService.ClassServiceCalls().GetClassVisits(v.ClassID)
-                if 'AssignedTo' in log:
-                    assigned_to = log.AssignedTo.FirstName + " " + log.AssignedTo.LastName
+                if 'AssignedTo' in contact_log:
+                    assigned_to = contact_log.AssignedTo.FirstName + " " + contact_log.AssignedTo.LastName
                 else:
                     assigned_to = None
-                logs[log.CreatedDateTime] = Log(log.ContactMethod, log.ContactName, log.Text, log.CreatedDateTime, log.CreatedBy.FirstName + " " + log.CreatedBy.LastName, log.FollowupByDate, assigned_to)
+                logs[contact_log.CreatedDateTime] = Log(contact_log.ContactMethod, contact_log.ContactName, contact_log.Text, contact_log.CreatedDateTime, contact_log.CreatedBy.FirstName + " " + contact_log.CreatedBy.LastName, contact_log.FollowupByDate, assigned_to)
 
         return logs
 
@@ -208,26 +213,31 @@ class MBClients:
         client = {}
         client['ID'] = client_id
         new_logs = []
-        for log in sorted(logs):
+        for contact_log in sorted(logs):
             new_log = {}
             new_log['Client'] = client
-            new_log['ContactMethod'] = logs[log].ContactMethod
-            new_log['ContactName'] = logs[log].ContactName
-            header = "Created: {0:%Y-%m-%d} by {1}<br>".format(logs[log].CreatedDateTime, logs[log].CreatedBy)
-            if logs[log].FollowupByDate is not None:
-                header += "Follow Up: {0:%Y-%m-%d}".format(logs[log].FollowupByDate)
-                if logs[log].AssignedTo is not None:
-                    header += " for {}".format(logs[log].AssignedTo)
+            new_log['ContactMethod'] = logs[contact_log].ContactMethod
+            new_log['ContactName'] = logs[contact_log].ContactName
+            header = "Created: {0:%Y-%m-%d} by {1}<br>".format(logs[contact_log].CreatedDateTime, logs[contact_log].CreatedBy)
+            if logs[contact_log].FollowupByDate is not None:
+                header += "Follow Up: {0:%Y-%m-%d}".format(logs[contact_log].FollowupByDate)
+                if logs[contact_log].AssignedTo is not None:
+                    header += " for {}".format(logs[contact_log].AssignedTo)
                 header += "<br>"
-            new_log['Text'] = header + logs[log].Text
-            new_log['CreatedDateTime'] = logs[log].CreatedDateTime
+            new_log['Text'] = header + logs[contact_log].Text
+            new_log['CreatedDateTime'] = logs[contact_log].CreatedDateTime
             new_log['IsSystemGenerated'] = False
             new_log['Types'] = log_types
             new_logs.append(new_log)
         log_array = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, new_logs, "ContactLog", "ContactLog")
 
         result = ClientService.ClientServiceCalls(self.site_id).AddContactLogs(client_id, log_array)
-        return result
+        if result.Status == 'Success':
+            log.debug("Added contact logs successfully.")
+            return 0
+        else:
+            log.debug("Error adding contact logs: {}".format(result.Clients.Client[0].Messages[0]))
+            return -1
 
 
     def get_contactlog_mbtransfer_typeid(self):
@@ -251,9 +261,8 @@ class MBClients:
     def add_custom_fields(self, client_id, custom_fields):
         if custom_fields is not None:
             new_field_list = []
-            for field_name in ['Employer', 'Occupation', 'Referral']:
-                # for field_name in ['Company', 'Position']:
-                # print self.get_custom_field_id(field_name)
+            for field_name in ['Employer', 'Occupation', 'Referral']:  # TESTING
+            # for field_name in ['Company', 'Position']:
                 if field_name in [field['Name'] for field in custom_fields]:
                     # print "{0}={1}".format(field_name, [f for f in custom_fields if field_name in f['Name']][0]['Value'])
                     field_id = self.get_custom_field_id(field_name)
@@ -268,7 +277,12 @@ class MBClients:
                 client['CustomClientFields'] = new_fields
                 clients = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, [client], "Client", "Client")
                 result = ClientService.ClientServiceCalls(self.site_id).AddOrUpdateClients('Update', False, clients)
-                return result
+                if result.Status == 'Success':
+                    log.debug("Updated Custom fields successfully.")
+                    return 0
+                else:
+                    log.debug("Error updating custom fields: {}".format(result.Clients.Client[0].Messages[0]))
+                    return -1
             else:
                 return None
 
@@ -286,4 +300,17 @@ class MBClients:
         result = ClientService.ClientServiceCalls(self.site_id).AddOrUpdateClients('Update', False, clients)
         return result
 
+    def read_custom_fields(self, client_id, field_list):
+        custom_fields = self.get_client_custom_fields(client_id)
+        if custom_fields is not None:
+            new_field_list = {}
+            for field_name in field_list:
+                if field_name in [field['Name'] for field in custom_fields]:
+                    new_field_list[field_name] = [f for f in custom_fields if field_name in f['Name']][0]['Value']
+            return new_field_list
+        else:
+            return None
 
+    def set_client_types(self, client_id, client_types):
+        ct = MBClientTypes.MBClientTypes(self.site_id)
+        ct.update_client_types(client_id, client_types)
