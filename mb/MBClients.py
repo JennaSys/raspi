@@ -1,7 +1,9 @@
 import ClientService
 import BasicRequestHelper
+import csv
 
 from collections import namedtuple
+
 
 class MBClients:
     def __init__(self, site_id):
@@ -15,7 +17,7 @@ class MBClients:
             return None
 
     def get_client_indexes(self, client_id):
-        client =  ClientService.ClientServiceCalls(self.site_id).GetClientsBySingleId(client_id,['Clients.ClientIndexes'])
+        client = ClientService.ClientServiceCalls(self.site_id).GetClientsBySingleId(client_id,['Clients.ClientIndexes'])
         if len(client.Clients.Client) > 0:
             return client.Clients.Client[0]
         else:
@@ -160,11 +162,29 @@ class MBClients:
         class_list = ''
         for c in sorted(classes):
             # print "{0} ({1:%Y-%m-%d}) [{2}]".format(c, classes[c][0], classes[c][1])
-            class_list += "{0} ({1:%Y-%m-%d})\n".format(c, classes[c][0])
+            class_list += "{0} ({1:%Y-%m-%d})\n".format(c.encode('utf8'), classes[c][0])
         if len(class_list) == 0:
             class_list = 'None'
         return 'CLASS HISTORY\n--------------------------\n' + class_list + '\n\n'
 
+    def get_class_codes(self, client_id):
+        class_map = self.get_class_code_map()
+        visits = self.get_classes(client_id)
+        class_list = []
+        for visit in visits:
+            if visit in class_map.keys():
+                class_list.append(class_map[visit])
+        return class_list
+
+    def get_class_code_map(self):
+        fn = 'mb_class_map.csv'
+        class_map = {}
+        with open(fn, 'rb') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row[3]) > 0:
+                    class_map[row[1].decode('utf-8')] = row[3]
+        return class_map
 
     def get_contact_logs(self, client_id):
         logs_raw = ClientService.ClientServiceCalls(self.site_id).GetClientContactLogs(clientId=client_id, startDate='2010-01-01', endDate='2020-01-01')

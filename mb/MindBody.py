@@ -4,6 +4,7 @@ import SiteService
 import SaleService
 import ClassService
 import BasicRequestHelper
+import csv
 
 from collections import namedtuple
 
@@ -94,14 +95,14 @@ class MindBody:
             progs[p.ID] = p.Name
         return progs
 
-    def get_class_list(self):
+    def get_class_list(self, site_id):
         # ssc = SiteService.SiteServiceCalls()
         # progs_raw = ssc.GetPrograms()
         # progs = {}
         # for p in progs_raw.Programs[0]:
         #     progs[p.ID] = p.Name
 
-        csc = ClassService.ClassServiceCalls()
+        csc = ClassService.ClassServiceCalls(site_id)
         classes_raw = csc.GetClassDescriptions(startClassDateTime='2010-01-01', endClassDateTime='2020-01-01', fields=['ID', 'Name', 'Program'])
         classes = {}
         for c in classes_raw.ClassDescriptions[0]:
@@ -149,6 +150,15 @@ class MindBody:
 
         return logs
 
+    def dump_class_list(self, siteid):
+        classes = mb.get_class_list(siteid)
+        print len(classes)
+        with open('class_export.csv', "wb") as f:
+            writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            for id, c in sorted(classes.iteritems(), key=lambda x: x[1]):
+                print u"{0}|{1}|{2}".format(id, c, mb.get_class_code_from_name(c))
+                writer.writerow([id, c.encode("utf-8"), mb.get_class_code_from_name(c).encode("utf-8")])
+
 
 if __name__ == "__main__":
     mb = MindBody()
@@ -170,16 +180,16 @@ if __name__ == "__main__":
     # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100015431'])
     # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100015655'], ['Clients.FirstName','Clients.LastName'])
     # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100015431'], ['Clients.CustomClientFields','Clients.ClientCreditCard','Clients.ClientIndexes','Clients.EmergencyContactInfoName','Clients.RedAlert'])
-    client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100012186'], ['Clients.ClientIndexes'])
+    # client = ClientService.ClientServiceCalls().GetClientsByMultipleIds(['100012186'], ['Clients.ClientIndexes'])
     # client = ClientService.ClientServiceCalls().GetClientsByString('Shee')
-    client2 = ClientService.ClientServiceCalls().GetClientIndexes()
+    # client2 = ClientService.ClientServiceCalls().GetClientIndexes()
     # client = ClientService.ClientServiceCalls().GetAllClients(2, 10)
     # client = mb.get_clients('004',41095)
     # client = mb.get_clients('100011834',)
     # client = mb.get_clients('1545',)
     # client = mb.get_clients('100015655')
     # client = ClientService.ClientServiceCalls().AddFormulaNoteToClient('004', 'This is a test Formula Note added via the API')
-    print client
+    # print client
     # print sales
     # c = mb.make_clients("Brown", "Chuckie", "cbrown@peanuts.com","Male", "1970-01-01")
     # print c
@@ -187,11 +197,7 @@ if __name__ == "__main__":
     # print r
     # SiteService.SiteServiceCalls().GetLocations()
 
-    # classes = mb.get_class_list()
-    # print len(classes)
-    # # for c in sorted(classes.itervalues()):
-    # for id, c in sorted(classes.iteritems(), key=lambda x: x[1]):
-    #     print u"{0}|{1}|{2}".format(id,c, mb.get_class_code_from_name(c))
+    mb.dump_class_list(41095)
 
     # classes = ClientService.ClientServiceCalls().GetClientVisits('004','2010-01-01')
     # classes = mb.get_classes('356', 41095)

@@ -5,6 +5,8 @@ from datetime import datetime
 
 
 class ClassServiceCalls:
+    def __init__(self, site_id=-99):
+        self.site_id = site_id
 
     """This class contains examples of consumer methods for each ClientService method."""
 
@@ -54,7 +56,7 @@ class ClassServiceCalls:
                              startClassDateTime=datetime.today(),
                              endClassDateTime=datetime.today(),
                              fields=None):
-        result = ClassServiceMethods().GetClassDescriptions(classDescId,
+        result = ClassServiceMethods(self.site_id).GetClassDescriptions(classDescId,
                                                             programId,
                                                             staffIds,
                                                             locationId,
@@ -227,13 +229,15 @@ class ClassServiceCalls:
 
 
 class ClassServiceMethods:
+    def __init__(self, site_id):
+        self.site_id = site_id
 
     """This class contains producer methods for all ClassService methods."""
     wsdl = BasicRequestHelper.BuildWsdlUrl("Class")
     service = Client(wsdl)
 
     def CreateBasicRequest(self, requestName):
-        return BasicRequestHelper.CreateBasicRequest(self.service, requestName)
+        return BasicRequestHelper.CreateBasicRequest(self.service, requestName, [self.site_id])
 
     """AddClientsToClasses methods"""
 

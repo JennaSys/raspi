@@ -63,7 +63,12 @@ if __name__ == "__main__":
 
     # client = MBI.MBC.get_client('004')
     # client = MBI.MBC_old.get_client_indexes('100011834')
-    client = MBI.MBC_old.get_client_interests('004')
+    client = MBI.MBC_old.get_client_interests('100009387')
+    print client
+    # client = MBI.MBC_old.get_classes('004')
+    client = MBI.MBC_old.get_class_codes('100009387')
+    print sorted(client)
+    client = MBI.MBC_old.get_class_history('100009387')
     print client
     # client = MBI.import_client('100014533')
     # client = MBI.import_client('100011834')
