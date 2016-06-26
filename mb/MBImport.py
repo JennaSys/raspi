@@ -22,6 +22,7 @@ class MBImport:
 
     def import_client(self, client_id):
         try:
+            log.info("Checking import status for ID: {}".format(client_id))
             id_check = self.verify_is_new_id(client_id)
             if id_check is not None:
                 log.info("Old ID {0} has already been imported to new ID: {1}".format(client_id, id_check))
@@ -31,26 +32,26 @@ class MBImport:
                 new_client_id = self.import_profile(client_id)
 
                 if new_client_id is not None:
-                    log.info("  Importing custom fields...")
+                    log.info("...Importing custom fields...")
                     custom_fields = self.MBC_old.get_client_custom_fields(client_id)
                     self.MBC_new.add_custom_fields(new_client_id, custom_fields)
 
-                    log.info("  Updating record ID references...")
+                    log.info("...Updating record ID references...")
                     self.MBC_old.update_custom_field(client_id, 'Referral', new_client_id) # TESTING
                     self.MBC_new.update_custom_field(new_client_id,'Referral',client_id)   # TESTING
                     # MBI.MBC_old.update_custom_field(client_id,'New ID',new_client_id)
                     # MBI.MBC_new.update_custom_field(new_client_id,'Original ID',client_id)
 
-                    log.info("  Adding contact logs...")
+                    log.info("...Adding contact logs...")
                     contact_logs = self.MBC_old.get_contact_logs(client_id)
                     self.MBC_new.add_contact_logs(new_client_id, contact_logs)
 
-                    log.info("  Retrieving client interests for client types...")
+                    log.info("...Retrieving client interests for client types...")
                     interests = self.MBC_old.get_client_interests(client_id)
-                    log.info("  Retrieving class history for client types...")
+                    log.info("...Retrieving class history for client types...")
                     class_history = self.MBC_old.get_class_codes(client_id)
 
-                    log.info("  Updating client types...")
+                    log.info("...Updating client types...")
                     client_types = ['Bootcamp Only', 'Pool Only', 'Student', 'Blah']  # TESTING
                     # client_types = interests + class_history
                     if len(client_types) > 0:
@@ -73,12 +74,16 @@ class MBImport:
 
         # TESTING
         new_client["FirstName"] = 'Test_' + client["FirstName"]
-        new_client["LastName"] = 'zzzzzzzzzzzzzzz_' + client["LastName"]
+        new_client["LastName"] = 'zzz_' + client["LastName"]
         if 'Username' in client:
-            new_client["Username"] = 'zzzzzzzzzzzzz' + client["Username"]
+            new_client["Username"] = 'z' + client["Username"]
         # Field data overwrites
             new_client["Password"] = client["FirstName"] + client["PostalCode"]
-        new_client["Notes"] = self.MBC_old.get_class_history(client_id) + client["Notes"]
+        try:
+            new_client["Notes"] = self.MBC_old.get_class_history(client_id) + client["Notes"]
+        except AttributeError:
+            new_client["Notes"] = self.MBC_old.get_class_history(client_id)
+
         result = self.MBC_new.add_client(new_client)
         if result.Status == 'Success' and len(result.Clients) > 0:
             log.debug("Created new profile ID: {}".format(result.Clients.Client[0].ID))
@@ -96,11 +101,13 @@ class MBImport:
         id_key = 'Referral'  #TESTING
         # id_key = 'New ID'
 
-        id_field = self.MBC_old.read_custom_fields('100011834', [id_key])
-        if id_key in id_field.keys():
-            new_id = id_field[id_key]
-            if len(new_id) > 0:
-                return new_id
+        id_field = self.MBC_old.read_custom_fields(client_id, [id_key])
+        if id_field is not None:
+            if id_key in id_field.keys():
+                new_id = id_field[id_key]
+                if new_id is not None:
+                    if len(new_id) > 0:
+                        return new_id
 
         return None
 
@@ -146,5 +153,5 @@ if __name__ == "__main__":
     # MBI.MBC_new.add_contact_logs(new_client_id, logs)
     # print new_client_id
 
-    client = MBI.import_client('100011834')
+    client = MBI.import_client('100015083')
     print client

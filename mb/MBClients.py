@@ -196,14 +196,15 @@ class MBClients:
 
         logs = {}
         Log = namedtuple('Log','ContactMethod ContactName Text CreatedDateTime CreatedBy FollowupByDate AssignedTo')
-        for contact_log in logs_raw.ContactLogs[0]:
-            if contact_log.CreatedBy.Name not in ["System Generated"]:
-                # class_instance = ClassService.ClassServiceCalls().GetClassVisits(v.ClassID)
-                if 'AssignedTo' in contact_log:
-                    assigned_to = contact_log.AssignedTo.FirstName + " " + contact_log.AssignedTo.LastName
-                else:
-                    assigned_to = None
-                logs[contact_log.CreatedDateTime] = Log(contact_log.ContactMethod, contact_log.ContactName, contact_log.Text, contact_log.CreatedDateTime, contact_log.CreatedBy.FirstName + " " + contact_log.CreatedBy.LastName, contact_log.FollowupByDate, assigned_to)
+        if len(logs_raw.ContactLogs) > 0:
+            for contact_log in logs_raw.ContactLogs[0]:
+                if contact_log.CreatedBy.Name not in ["System Generated"]:
+                    # class_instance = ClassService.ClassServiceCalls().GetClassVisits(v.ClassID)
+                    if 'AssignedTo' in contact_log:
+                        assigned_to = contact_log.AssignedTo.FirstName + " " + contact_log.AssignedTo.LastName
+                    else:
+                        assigned_to = None
+                    logs[contact_log.CreatedDateTime] = Log(contact_log.ContactMethod, contact_log.ContactName, contact_log.Text, contact_log.CreatedDateTime, contact_log.CreatedBy.FirstName + " " + contact_log.CreatedBy.LastName, contact_log.FollowupByDate, assigned_to)
 
         return logs
 
