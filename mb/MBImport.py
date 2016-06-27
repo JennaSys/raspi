@@ -1,18 +1,14 @@
-import ClientService
-import SiteService
-import ClassService
-import BasicRequestHelper
-
 import MBClients
 
 import ssl
 import logging
 # import DebugPrinting
 
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-log = logging.getLogger('MBImport')
-log.setLevel(logging.DEBUG)
-# logging.getLogger('suds.transport').setLevel(logging.DEBUG)
+# logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+# log = logging.getLogger('MBImport')
+log = logging.getLogger("__main__")
+# log.setLevel(logging.DEBUG)
+# logging.getLogger('suds.transport').setLevel(logging.INFO)
 
 
 class MBImport:
@@ -22,82 +18,92 @@ class MBImport:
 
     def import_client(self, client_id):
         try:
-            log.info("Checking import status for ID: {}".format(client_id))
-            id_check = self.verify_is_new_id(client_id)
-            if id_check is not None:
-                log.info("Old ID {0} has already been imported to new ID: {1}".format(client_id, id_check))
-                return -1
+            if len(client_id) == 0:
+                log.info("Old client ID can not be empty!")
             else:
-                log.info("Importing main profile for ID: {}".format(client_id))
-                new_client_id = self.import_profile(client_id)
+                log.info("Checking transfer status for ID: {}".format(client_id))
+                id_check = self.verify_is_new_id(client_id)
+                if id_check is not None:
+                    log.info("Old ID {0} has already been transferred to new ID: {1}".format(client_id, id_check))
+                    return -1
+                else:
+                    log.info("Transferring main profile for ID: {}".format(client_id))
+                    new_client_id = self.import_profile(client_id)
 
-                if new_client_id is not None:
-                    log.info("...Importing custom fields...")
-                    custom_fields = self.MBC_old.get_client_custom_fields(client_id)
-                    self.MBC_new.add_custom_fields(new_client_id, custom_fields)
+                    if new_client_id is None:
+                        log.info("Client ID '{}' was not transferred!".format(client_id))
+                    else:
+                        log.info("...Transferring custom fields...")
+                        custom_fields = self.MBC_old.get_client_custom_fields(client_id)
+                        self.MBC_new.add_custom_fields(new_client_id, custom_fields)
 
-                    log.info("...Updating record ID references...")
-                    self.MBC_old.update_custom_field(client_id, 'Referral', new_client_id) # TESTING
-                    self.MBC_new.update_custom_field(new_client_id,'Referral',client_id)   # TESTING
-                    # MBI.MBC_old.update_custom_field(client_id,'New ID',new_client_id)
-                    # MBI.MBC_new.update_custom_field(new_client_id,'Original ID',client_id)
+                        log.info("...Updating record ID references...")
+                        self.MBC_old.update_custom_field(client_id, 'Referral', new_client_id) # TESTING
+                        self.MBC_new.update_custom_field(new_client_id,'Referral',client_id)   # TESTING
+                        # MBI.MBC_old.update_custom_field(client_id,'New ID',new_client_id)
+                        # MBI.MBC_new.update_custom_field(new_client_id,'Original ID',client_id)
 
-                    log.info("...Adding contact logs...")
-                    contact_logs = self.MBC_old.get_contact_logs(client_id)
-                    self.MBC_new.add_contact_logs(new_client_id, contact_logs)
+                        log.info("...Transferring contact logs...")
+                        contact_logs = self.MBC_old.get_contact_logs(client_id)
+                        self.MBC_new.add_contact_logs(new_client_id, contact_logs)
 
-                    log.info("...Retrieving client interests for client types...")
-                    interests = self.MBC_old.get_client_interests(client_id)
-                    log.info("...Retrieving class history for client types...")
-                    class_history = self.MBC_old.get_class_codes(client_id)
+                        log.info("...Retrieving client interests for client types...")
+                        interests = self.MBC_old.get_client_interests(client_id)
+                        log.info("...Retrieving class history for client types...")
+                        class_history = self.MBC_old.get_class_codes(client_id)
 
-                    log.info("...Updating client types...")
-                    client_types = ['Bootcamp Only', 'Pool Only', 'Student', 'Blah']  # TESTING
-                    # client_types = interests + class_history
-                    if len(client_types) > 0:
-                        self.MBC_new.set_client_types(new_client_id, client_types)
+                        log.info("...Updating client types...")
+                        client_types = ['Bootcamp Only', 'Pool Only', 'Student', 'Blah']  # TESTING
+                        # client_types = interests + class_history
+                        if len(client_types) > 0:
+                            self.MBC_new.set_client_types(new_client_id, client_types)
 
-                    log.info("Client import is complete: Old client ID {0} has been imported as new ID: {1}".format(client_id, new_client_id))
-                return new_client_id
+                        log.info("Client transfer is complete: Old client ID {0} has been imported as new ID: {1}".format(client_id, new_client_id))
+                    return new_client_id
 
         except ssl.SSLError:
-            log.err("SSLError: The read operation timed out")
+            log.error("SSLError: The read operation timed out")
+        except Exception as e:
+            log.error("ERROR ERROR ERROR!!!")
+
 
     def import_profile(self, client_id):
         client = self.MBC_old.get_client(client_id)
-
-        new_client = {}
-        fields = self.MBC_new.get_client_fields()
-        for field in fields:
-            if field in client:
-                new_client[field] = client[field]
-
-        # TESTING
-        new_client["FirstName"] = 'Test_' + client["FirstName"]
-        new_client["LastName"] = 'zzz_' + client["LastName"]
-        if 'Username' in client:
-            new_client["Username"] = 'z' + client["Username"]
-        # Field data overwrites
-            new_client["Password"] = client["FirstName"] + client["PostalCode"]
-        try:
-            new_client["Notes"] = self.MBC_old.get_class_history(client_id) + client["Notes"]
-        except AttributeError:
-            new_client["Notes"] = self.MBC_old.get_class_history(client_id)
-
-        result = self.MBC_new.add_client(new_client)
-        if result.Status == 'Success' and len(result.Clients) > 0:
-            log.debug("Created new profile ID: {}".format(result.Clients.Client[0].ID))
-            return result.Clients.Client[0].ID
-        else:
-            try:
-                log.debug("Error importing main profile: {}".format(result.Clients.Client[0].Messages[0]))
-            except AttributeError:
-                log.debug("Error importing main profile: {}".format(result.Message))
-
+        if client is None:
+            log.warn("No client record available for ID: {}".format(client_id))
             return None
+        else:
+            new_client = {}
+            fields = self.MBC_new.get_client_fields()
+            for field in fields:
+                if field in client:
+                    new_client[field] = client[field]
+
+            # TESTING
+            new_client["FirstName"] = 'Test_' + client["FirstName"]
+            new_client["LastName"] = 'zzz_' + client["LastName"]
+            if 'Username' in client:
+                new_client["Username"] = 'z' + client["Username"]
+            # Field data overwrites
+                new_client["Password"] = client["FirstName"] + client["PostalCode"]
+            try:
+                new_client["Notes"] = self.MBC_old.get_class_history(client_id) + client["Notes"]
+            except AttributeError:
+                new_client["Notes"] = self.MBC_old.get_class_history(client_id)
+
+            result = self.MBC_new.add_client(new_client)
+            if result.Status == 'Success' and len(result.Clients) > 0:
+                log.debug("Created new profile ID: {}".format(result.Clients.Client[0].ID))
+                return result.Clients.Client[0].ID
+            else:
+                try:
+                    log.error("Error transferring main profile: {}".format(result.Clients.Client[0].Messages[0]))
+                except AttributeError:
+                    log.error("Error transferring main profile: {}".format(result.Message))
+
+                return None
 
     def verify_is_new_id(self, client_id):
-        # return None  #TESTING
         id_key = 'Referral'  #TESTING
         # id_key = 'New ID'
 

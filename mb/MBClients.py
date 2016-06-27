@@ -7,8 +7,12 @@ from collections import namedtuple
 import csv
 import logging
 
-log = logging.getLogger('MBImport')
+log = logging.getLogger("__main__")
 
+suds_logging_level = logging.INFO
+logging.getLogger('suds.transport').setLevel(suds_logging_level)
+logging.getLogger('suds.resolver').setLevel(suds_logging_level)
+logging.getLogger('suds').setLevel(suds_logging_level)
 
 class MBClients:
     def __init__(self, site_id):
@@ -16,10 +20,12 @@ class MBClients:
 
     def get_client(self, client_id):
         client =  ClientService.ClientServiceCalls(self.site_id).GetClientsBySingleId(client_id)
-        if len(client.Clients.Client) > 0:
-            return client.Clients.Client[0]
-        else:
-            return None
+        if hasattr(client.Clients,'Client'):
+            if len(client.Clients.Client) > 0:
+                return client.Clients.Client[0]
+        # else:
+        #     log.warn("No client record available for ID: {}".format(client_id))
+        return None
 
     def get_client_indexes(self, client_id):
         client = ClientService.ClientServiceCalls(self.site_id).GetClientsBySingleId(client_id,['Clients.ClientIndexes'])
@@ -254,10 +260,12 @@ class MBClients:
 
     def get_client_custom_fields(self, client_id):
         client =  ClientService.ClientServiceCalls(self.site_id).GetClientsBySingleId(client_id, ['Clients.CustomClientFields'])
-        if len(client.Clients.Client[0].CustomClientFields) > 0:
-            return client.Clients.Client[0].CustomClientFields[0]
+        if hasattr(client.Clients,'Client'):
+            if len(client.Clients.Client[0].CustomClientFields) > 0:
+                return client.Clients.Client[0].CustomClientFields[0]
         else:
-            return None
+            log.warn("No client record available for ID: {}".format(client_id))
+        return None
 
     def add_custom_fields(self, client_id, custom_fields):
         if custom_fields is not None:
