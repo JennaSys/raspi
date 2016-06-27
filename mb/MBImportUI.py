@@ -1,4 +1,5 @@
 import Tkinter as tk
+import tkFont
 import threading
 import logging
 import MBImport
@@ -26,6 +27,7 @@ class MBTransfer:
 
         self.root = tk.Tk()
         self.root.title("Mindbody Client Transfer")
+        self.root.iconbitmap("vocademy.ico")
 
         self.mainframe = tk.Frame(self.root, padx=6, pady=6)
         self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
@@ -51,20 +53,25 @@ class MBTransfer:
         t.start()
 
     def setup_ui(self):
-        old_client_entry = tk.Entry(self.mainframe, width=20, textvariable=self.old_client)
+        input_frame = tk.Frame(self.mainframe, padx=2, pady=2)
+        input_frame.grid(column=1, columnspan=1, row=1, rowspan=2, sticky=tk.N+tk.W)
+
+        old_client_entry = tk.Entry(input_frame, width=20, textvariable=self.old_client)
         old_client_entry.grid(column=2, columnspan=1, row=1, sticky=tk.W)
 
         # tk.Label(self.mainframe, textvariable=new_client).grid(column=2, row=2, sticky=tk.E)
-        tk.Entry(self.mainframe, width=20, textvariable=self.new_client, state="readonly").grid(column=2, columnspan=1, row=2, sticky=tk.W)
-        tk.Button(self.mainframe, text="Transfer", command=self.handle_click).grid(column=3, row=1, rowspan=2, sticky=tk.W)
+        tk.Entry(input_frame, width=20, textvariable=self.new_client, state="readonly").grid(column=2, columnspan=1, row=2, sticky=tk.W)
 
-        tk.Label(self.mainframe, text="Old Client ID").grid(column=1, row=1, sticky=tk.E)
-        tk.Label(self.mainframe, text="New Client ID").grid(column=1, row=2, sticky=tk.E)
+        tk.Label(input_frame, text="Old Client ID: ").grid(column=1, row=1, sticky=tk.E)
+        tk.Label(input_frame, text="New Client ID: ").grid(column=1, row=2, sticky=tk.E)
+
+        btn_font = tkFont.Font(family='Helvetica', size=18, weight='bold')
+        tk.Button(self.mainframe, text="Transfer", font=btn_font, command=self.handle_click).grid(column=3, row=1, rowspan=2, sticky=tk.N+tk.S+tk.E+tk.W)
 
         # log_output = Tk.Message(mainframe, textvariable=log_message).grid(column=1, columnspan=3, row=4, sticky=S)
         scrollbar = tk.Scrollbar()
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S, tk.E))
-        log_output = tk.Text(self.mainframe, width=100, height=5, name='log_output', bg="gray95", fg="dark red", yscrollcommand=scrollbar.set)
+        log_output = tk.Text(self.mainframe, width=100, height=10, name='log_output', bg="gray95", fg="dark red", yscrollcommand=scrollbar.set)
         log_output.grid(column=1, columnspan=3, row=3, sticky=tk.S)
         scrollbar.config(command=log_output.yview)
 
