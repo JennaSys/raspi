@@ -5,6 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
+from keys import mindbody
+
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 # log = logging.getLogger()
@@ -17,6 +19,7 @@ logging.getLogger('selenium.webdriver.remote.remote_connection').setLevel(loggin
 class MBClientTypes:
     def __init__(self, site_id, client_types=None):
         self.client_types = client_types
+        self.site_id = site_id
 
         self.main_url = 'https://clients.mindbodyonline.com/classic/home?studioid={}'.format(site_id)
         self.client_url = 'https://clients.mindbodyonline.com/asp/adm/adm_clt_profile.asp?id='
@@ -34,8 +37,8 @@ class MBClientTypes:
             log.debug('frame loaded!')
 
             # login to app
-            browser.find_element_by_id('requiredtxtUserName').send_keys('Siteowner')
-            browser.find_element_by_id('requiredtxtPassword').send_keys('apitest1234')
+            browser.find_element_by_id('requiredtxtUserName').send_keys(mindbody[self.site_id]["USER_NAME"])
+            browser.find_element_by_id('requiredtxtPassword').send_keys(mindbody[self.site_id]["USER_PASSWORD"])
             browser.find_element_by_id('btnLogin').click()
             WebDriverWait(browser, timeout=10).until(EC.presence_of_element_located((By.NAME, 'mainFrame')))
             browser.switch_to.frame('mainFrame')

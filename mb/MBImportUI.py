@@ -22,8 +22,8 @@ class WidgetLogger(logging.Handler):
 
 class MBTransfer:
     def __init__(self):
-        self.MBI = MBImport.MBImport(-99, -99)  # TESTING
-        # self.MBI = MBImport.MBImport(41095, 293010)  # TESTING
+        # self.MBI = MBImport.MBImport(-99, -99)  # TESTING
+        self.MBI = MBImport.MBImport(41095, 293010)  # LIVE
 
         self.root = tk.Tk()
         self.root.title("Mindbody Client Transfer")

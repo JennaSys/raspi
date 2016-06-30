@@ -112,7 +112,7 @@ class MBClients:
                   "EmergencyContactInfoEmail",
                   "PromotionalEmailOptIn",
                   "CreationDate",
-                  "Liability", #save releases > 1/1/16 or so?
+                  "Liability", #save releases Liability.AgreementDate > 1/1/16 or so?
                   # "ProspectStage",
                   # "UniqueID",
                   "Action",
@@ -250,8 +250,8 @@ class MBClients:
     def get_contactlog_mbtransfer_typeid(self):
         log_types = ClientService.ClientServiceCalls(self.site_id).GetContactLogTypes()
         # TESTING
-        return [t for t in log_types.ContatctLogTypes[0] if 'Fitness Assessment' in t[1]][0]['ID']
-        # return [t for t in log_types.ContatctLogTypes[0] if 'MB TRANSFER' in t[1]][0]['ID']
+        # return [t for t in log_types.ContatctLogTypes[0] if 'Fitness Assessment' in t[1]][0]['ID']
+        return [t for t in log_types.ContatctLogTypes[0] if 'MB TRANSFER' in t[1]][0]['ID']
 
 
     def get_custom_field_id(self, field_name):
@@ -270,8 +270,8 @@ class MBClients:
     def add_custom_fields(self, client_id, custom_fields):
         if custom_fields is not None:
             new_field_list = []
-            for field_name in ['Employer', 'Occupation', 'Referral']:  # TESTING
-            # for field_name in ['Company', 'Position']:
+            # for field_name in ['Employer', 'Occupation', 'Referral']:  # TESTING
+            for field_name in ['Company', 'Position']:
                 if field_name in [field['Name'] for field in custom_fields]:
                     # print "{0}={1}".format(field_name, [f for f in custom_fields if field_name in f['Name']][0]['Value'])
                     field_id = self.get_custom_field_id(field_name)
