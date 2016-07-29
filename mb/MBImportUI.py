@@ -21,9 +21,8 @@ class WidgetLogger(logging.Handler):
 
 
 class MBTransfer:
-    def __init__(self):
-        # self.MBI = MBImport.MBImport(-99, -99)  # TESTING
-        self.MBI = MBImport.MBImport(41095, 293010)  # LIVE
+    def __init__(self, oldsite, newsite):
+        self.MBI = MBImport.MBImport(oldsite, newsite)
 
         self.root = tk.Tk()
         self.root.title("Mindbody Client Transfer")
@@ -81,9 +80,15 @@ class MBTransfer:
         self.root.bind('<Return>', self.handle_click)
 
     def setup_logging(self):
-        logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-        log = logging.getLogger()
+        logging.basicConfig(format='%(asctime)s %(levelname)s: %(funcName)s() --> %(message)s')
+        log = logging.getLogger(__name__)
         log.setLevel(logging.DEBUG)
+
+        # stream_handler = logging.StreamHandler()
+        # stream_handler.setLevel(logging.DEBUG)
+        # formatter = logging.Formatter('%(asctime)s %(levelname)s: %(funcName)s() --> %(message)s')
+        # stream_handler.setFormatter(formatter)
+        # log.addHandler(stream_handler)
 
         logging_handler = WidgetLogger(self.mainframe.children['log_output'])
         log.addHandler(logging_handler)
@@ -95,5 +100,6 @@ class MBTransfer:
 
 
 if __name__ == "__main__":
-    mbt = MBTransfer()
+    # mbt = MBTransfer(-99, -99)  # TESTING
+    mbt = MBTransfer(41095, 293010)  # LIVE
     mbt.run_app()

@@ -3,6 +3,9 @@ from unittest import result
 from suds.client import Client
 import BasicRequestHelper
 from datetime import datetime
+import logging
+
+log = logging.getLogger("__main__")
 
 
 class ClientServiceCalls:
@@ -305,6 +308,7 @@ class ClientServiceMethods:
     service = Client(wsdl, location="https://api.mindbodyonline.com/0_5/ClientService.asmx")
 
     def CreateBasicRequest(self, requestName):
+        log.debug("Client SOAP Request: " + requestName)
         return BasicRequestHelper.CreateBasicRequest(self.service, requestName, [self.site_id])
 
     """AddArrival methods"""

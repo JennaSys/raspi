@@ -66,7 +66,7 @@ class MBImport:
         except ssl.SSLError:
             log.error("SSLError: The read operation timed out")
         except Exception as e:
-            log.error("ERROR ERROR ERROR!!! --> {}".format(e.message))
+            log.error("import_client() ERROR!!! --> {}".format(e.message))
 
 
     def import_profile(self, client_id):
@@ -88,10 +88,13 @@ class MBImport:
                 # new_client["Username"] = 'z' + client["Username"]
             # Field data overwrites
                 new_client["Password"] = client["FirstName"] + client["LastName"] + '1'
+            class_history = self.MBC_old.get_class_history(client_id)
             try:
-                new_client["Notes"] = self.MBC_old.get_class_history(client_id) + client["Notes"]
+                new_client["Notes"] = class_history.decode('utf-8') + client["Notes"]
             except AttributeError:
-                new_client["Notes"] = self.MBC_old.get_class_history(client_id)
+                new_client["Notes"] = class_history.decode('utf-8')
+            except Exception as e:
+                log.error("import_profile() ERROR!!! --> {}".format(e.message))
 
             if client.Liability.AgreementDate is not None:
                 if client.Liability.AgreementDate < datetime.datetime(2016,1,1):
@@ -126,8 +129,8 @@ class MBImport:
 
 
 if __name__ == "__main__":
-    MBI = MBImport(-99, -99)  # TESTING
-    # MBI = MBImport(41095, 293010)
+    # MBI = MBImport(-99, -99)  # TESTING
+    MBI = MBImport(41095, 293010)
 
     # print MBI.MBC_old.get_class_history('356')
     # logs = MBI.MBC_old.get_contact_logs('004')
@@ -159,8 +162,7 @@ if __name__ == "__main__":
 
     # client = MBI.import_client('100014533')
     # client = MBI.import_client('100011834')
-    client = MBI.import_profile('100015679')
-
+    # client = MBI.import_profile('100015679')
     # client = MBI.import_client('100012186')
     # new_client_id = client.Clients.Client[0].ID
     # logs = MBI.MBC_old.get_contact_logs('100012186')
@@ -173,3 +175,20 @@ if __name__ == "__main__":
     # result=MBI.MBC_old.update_custom_field('004', 'New ID', '100000004')
     # result = MBI.MBC_old.get_client('004')
     # print result
+
+
+    client_id = '1201'
+    new_client_id = '100000019'
+    # MBI.MBC_old.update_custom_field(client_id, 'New ID', new_client_id)
+
+    # contact_logs = MBI.MBC_old.get_contact_logs(client_id)
+    # MBI.MBC_new.add_contact_logs(new_client_id, contact_logs)
+
+    interests = MBI.MBC_old.get_client_interests(client_id)
+    class_history = MBI.MBC_old.get_class_codes(client_id)
+    client_types = interests + class_history
+    if len(client_types) > 0:
+        MBI.MBC_new.set_client_types(new_client_id, client_types)
+
+    # print MBI.MBC_old.get_class_history(client_id)
+    # print MBI.import_profile(client_id)

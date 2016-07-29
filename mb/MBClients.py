@@ -10,9 +10,9 @@ import logging
 log = logging.getLogger("__main__")
 
 suds_logging_level = logging.INFO
-logging.getLogger('suds.transport').setLevel(suds_logging_level)
-logging.getLogger('suds.resolver').setLevel(suds_logging_level)
-logging.getLogger('suds').setLevel(suds_logging_level)
+# logging.getLogger('suds.transport').setLevel(suds_logging_level)
+# logging.getLogger('suds.resolver').setLevel(suds_logging_level)
+# logging.getLogger('suds').setLevel(suds_logging_level)
 
 class MBClients:
     def __init__(self, site_id):
@@ -52,30 +52,31 @@ class MBClients:
 
     def get_client_index_map(self):
         index_map = {
-            "Interested in 3D Printing/Scanning":"01 - Interest",
-            "Interested in CAD/CAM & Graphics":"02 - Interest",
-            "Interested in Costume & Props":"03 - Interest",
-            "Interested in Electronics & Robotics":"05 - Interest",
-            "Interested in Laser Cut & Engrave":"08 - Interest",
-            "Interested in Machine Shop":"09 - Interest",
-            "Interested in Plastics & Composites":"10 - Interest",
-            "Interested in Programing & Coding":"11 - Interest",
-            "Interested in Sewing & Textiles":"12 - Interest",
-            "Interested in Welding/Fabrication":"14 - Interest",
-            "Interested in Wood Shop":"15 - Interest",
-            "Interested in Weekend Cosplay Workshops":"03 - Interest",
-            "Interested in Weekend Wielding/Fab Workshops":"14 - Interest",
-            "3D Printing":"01 - Interest",
-            "CAD/CAM & Graphics":"02 - Interest",
-            "Costume & Props":"03 - Interest",
-            "Electronics & Robotics":"05 - Interest",
-            "Laser Cut & Engrave":"08 - Interest",
-            "Machine Shop":"09 - Interest",
-            "Plastics & Composites":"10 - Interest",
-            "Programming & Coding":"11 - Interest",
-            "Sewing & Textiles":"12 - Interest",
-            "Welding/Fabrication":"14 - Interest",
-            "Wood Shop":"15 - Interest"}
+            "Interested in 3D Printing/Scanning":"01 - 3D Printing & Scanning Interest",
+            "Interested in CAD/CAM & Graphics":"02 - CAD, CAM, & Graphics Interest",
+            "Interested in Costume & Props":"03 - Costume & Propmaking Interest",
+            "Interested in Electronics & Robotics":"04 - Crafts & Hobbies Interest",
+            "Interested in Laser Cut & Engrave":"08 - Laser Cutting & Engraving Interest",
+            "Interested in Machine Shop":"09 - Machine Shop & CNC Interest",
+            "Interested in Plastics & Composites":"10 - Plastics & Composites Interest",
+            "Interested in Programing & Coding":"11 - Programming & Coding Interest",
+            "Interested in Sewing & Textiles":"12 - Sewing & Textiles Interest",
+            "Interested in Welding/Fabrication":"14 - Welding & Fabrication Interest",
+            "Interested in Wood Shop":"15 - Wood Shop & CNC Interest",
+            "Interested in Weekend Cosplay Workshops":"03 - Costume & Propmaking Interest",
+            "Interested in Weekend Wielding/Fab Workshops":"14 - Welding & Fabrication Interest",
+            "3D Printing":"01 - 3D Printing & Scanning Interest",
+            "3D Printing/Scanning":"01 - 3D Printing & Scanning Interest",
+            "CAD/CAM & Graphics":"02 - CAD, CAM, & Graphics Interest",
+            "Costume & Props":"03 - Costume & Propmaking Interest",
+            "Electronics & Robotics":"05 - Electronics & Robotics Interest",
+            "Laser Cut & Engrave":"08 - Laser Cutting & Engraving Interest",
+            "Machine Shop":"09 - Machine Shop & CNC Interest",
+            "Plastics & Composites":"10 - Plastics & Composites Interest",
+            "Programming & Coding":"11 - Programming & Coding Interest",
+            "Sewing & Textiles":"12 - Sewing & Textiles Interest",
+            "Welding/Fabrication":"14 - Welding & Fabrication Interest",
+            "Wood Shop":"15 - Wood Shop & CNC Interest"}
         return index_map
 
     def add_client(self, client):
@@ -152,7 +153,7 @@ class MBClients:
         visits = {}
         if visits_raw.ResultCount > 0:
             for v in visits_raw.Visits[0]:
-                if v.SignedIn and v.ClassID != 0 and v.Name not in ["Member's Social"]:
+                if v.SignedIn and v.ClassID != 0 and v.Name not in ["Member's Social","DITTUESDAY"]:
                     # class_instance = ClassService.ClassServiceCalls().GetClassVisits(v.ClassID)
                     visits[v.Name] = (v.StartDateTime, self.get_class_code_from_name(v.Name))
 
@@ -174,6 +175,7 @@ class MBClients:
         for c in sorted(classes):
             # print "{0} ({1:%Y-%m-%d}) [{2}]".format(c, classes[c][0], classes[c][1])
             class_list += "{0} ({1:%Y-%m-%d})\n".format(c.encode('utf8'), classes[c][0])
+            # class_list += "{0} ({1:%Y-%m-%d})\n".format(c, classes[c][0])
         if len(class_list) == 0:
             class_list = 'None'
         return 'CLASS HISTORY\n--------------------------\n' + class_list + '\n\n'
@@ -221,21 +223,22 @@ class MBClients:
         client['ID'] = client_id
         new_logs = []
         for contact_log in sorted(logs):
-            new_log = {}
-            new_log['Client'] = client
-            new_log['ContactMethod'] = logs[contact_log].ContactMethod
-            new_log['ContactName'] = logs[contact_log].ContactName
-            header = "Created: {0:%Y-%m-%d} by {1}<br>".format(logs[contact_log].CreatedDateTime, logs[contact_log].CreatedBy)
-            if logs[contact_log].FollowupByDate is not None:
-                header += "Follow Up: {0:%Y-%m-%d}".format(logs[contact_log].FollowupByDate)
-                if logs[contact_log].AssignedTo is not None:
-                    header += " for {}".format(logs[contact_log].AssignedTo)
-                header += "<br>"
-            new_log['Text'] = header + logs[contact_log].Text
-            new_log['CreatedDateTime'] = logs[contact_log].CreatedDateTime
-            new_log['IsSystemGenerated'] = False
-            new_log['Types'] = log_types
-            new_logs.append(new_log)
+            if logs[contact_log].Text is not None:
+                new_log = {}
+                new_log['Client'] = client
+                new_log['ContactMethod'] = logs[contact_log].ContactMethod
+                new_log['ContactName'] = logs[contact_log].ContactName
+                header = "Created: {0:%Y-%m-%d} by {1}<br>".format(logs[contact_log].CreatedDateTime, logs[contact_log].CreatedBy)
+                if logs[contact_log].FollowupByDate is not None:
+                    header += "Follow Up: {0:%Y-%m-%d}".format(logs[contact_log].FollowupByDate)
+                    if logs[contact_log].AssignedTo is not None:
+                        header += " for {}".format(logs[contact_log].AssignedTo)
+                    header += "<br>"
+                new_log['Text'] = header + logs[contact_log].Text
+                new_log['CreatedDateTime'] = logs[contact_log].CreatedDateTime
+                new_log['IsSystemGenerated'] = False
+                new_log['Types'] = log_types
+                new_logs.append(new_log)
         log_array = BasicRequestHelper.FillArrayType(ClientService.ClientServiceMethods.service, new_logs, "ContactLog", "ContactLog")
 
         result = ClientService.ClientServiceCalls(self.site_id).AddContactLogs(client_id, log_array)
