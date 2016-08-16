@@ -87,7 +87,8 @@ class MBImport:
             if 'Username' in client:
                 # new_client["Username"] = 'z' + client["Username"]
             # Field data overwrites
-                new_client["Password"] = client["FirstName"] + client["LastName"] + '1'
+                if client["Username"] is not None:
+                    new_client["Password"] = client["FirstName"] + client["LastName"] + '1'
             class_history = self.MBC_old.get_class_history(client_id)
             try:
                 new_client["Notes"] = class_history.decode('utf-8') + client["Notes"]
@@ -177,18 +178,18 @@ if __name__ == "__main__":
     # print result
 
 
-    client_id = '1201'
+    client_id = '100004815'
     new_client_id = '100000019'
     # MBI.MBC_old.update_custom_field(client_id, 'New ID', new_client_id)
 
     # contact_logs = MBI.MBC_old.get_contact_logs(client_id)
     # MBI.MBC_new.add_contact_logs(new_client_id, contact_logs)
 
-    interests = MBI.MBC_old.get_client_interests(client_id)
-    class_history = MBI.MBC_old.get_class_codes(client_id)
-    client_types = interests + class_history
-    if len(client_types) > 0:
-        MBI.MBC_new.set_client_types(new_client_id, client_types)
+    # interests = MBI.MBC_old.get_client_interests(client_id)
+    # class_history = MBI.MBC_old.get_class_codes(client_id)
+    # client_types = interests + class_history
+    # if len(client_types) > 0:
+    #     MBI.MBC_new.set_client_types(new_client_id, client_types)
 
     # print MBI.MBC_old.get_class_history(client_id)
-    # print MBI.import_profile(client_id)
+    print MBI.import_profile(client_id)
