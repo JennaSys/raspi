@@ -27,19 +27,26 @@ def get_client_list():
         with open(fn, 'rb') as f:
             reader = csv.reader(f)
             for row in reader:
-                if len(row[0]) > 0:
-                    client_list.append(row[0])
+                if len(row[3]) > 0:
+                    # if len(row[7]) > 0 or len(row[9]) > 0:  # Verify client has a phone or email listed
+                    if len(row[4]) > 0 or len(row[5]) > 0 or len(row[6]) > 0 or len(row[7]) > 0:  # Verify client has a phone or email listed
+                        client_list.append(row[3])
+                    else:
+                        # log.warn("*** Client {0} ({1}) has no contact information and will NOT be transferred.".format(row[3], row[2]))
+                        log.warn("*** Client {0} ({1},{2}) has no contact information and will NOT be transferred.".format(row[3], row[0], row[1]))
 
     except IOError as e:
         log.error("get_client_list(): {0} --> {1}".format(e.filename, e.strerror))
     except Exception as e:
         log.error("get_client_list() --> {}".format(e.message))
+
     return client_list
 
 
 def import_clients(oldsite, newsite):
     MBI = MBImport.MBImport(oldsite, newsite)
     clients = get_client_list()
+    log.info("Beginning BATCH processing of {} records".format(len(clients)))
     for client in clients:
         log.info("Transferring ID: {}".format(client))
         new_id = MBI.import_client(client)
@@ -48,5 +55,5 @@ def import_clients(oldsite, newsite):
 
 
 if __name__ == "__main__":
-    import_clients(-99, -99)  # TESTING
-    # import_clients(41095, 293010)
+    # import_clients(-99, -99)  # TESTING
+    import_clients(41095, 293010)

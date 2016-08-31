@@ -72,7 +72,7 @@ class MBImport:
     def import_profile(self, client_id):
         client = self.MBC_old.get_client(client_id)
         if client is None:
-            log.warn("No client record available for ID: {}".format(client_id))
+            log.error("No client record available for ID: {}".format(client_id))
             return None
         else:
             new_client = {}
@@ -92,10 +92,14 @@ class MBImport:
             class_history = self.MBC_old.get_class_history(client_id)
             try:
                 new_client["Notes"] = class_history.decode('utf-8') + client["Notes"]
-            except AttributeError:
+            except (AttributeError, TypeError) as e:
                 new_client["Notes"] = class_history.decode('utf-8')
             except Exception as e:
                 log.error("import_profile() ERROR!!! --> {}".format(e.message))
+
+            # Flag as prospect if no classes taken
+            if class_history == 'CLASS HISTORY\n--------------------------\nNone\n\n':
+                new_client["IsProspect"] = True
 
             if client.Liability.AgreementDate is not None:
                 if client.Liability.AgreementDate < datetime.datetime(2016,1,1):
@@ -178,18 +182,18 @@ if __name__ == "__main__":
     # print result
 
 
-    client_id = '100004815'
-    new_client_id = '100000019'
+    client_id = '100002263'
+    new_client_id = '100001533'
     # MBI.MBC_old.update_custom_field(client_id, 'New ID', new_client_id)
 
     # contact_logs = MBI.MBC_old.get_contact_logs(client_id)
     # MBI.MBC_new.add_contact_logs(new_client_id, contact_logs)
 
-    # interests = MBI.MBC_old.get_client_interests(client_id)
-    # class_history = MBI.MBC_old.get_class_codes(client_id)
-    # client_types = interests + class_history
-    # if len(client_types) > 0:
-    #     MBI.MBC_new.set_client_types(new_client_id, client_types)
+    interests = MBI.MBC_old.get_client_interests(client_id)
+    class_history = MBI.MBC_old.get_class_codes(client_id)
+    client_types = interests + class_history
+    if len(client_types) > 0:
+        MBI.MBC_new.set_client_types(new_client_id, client_types)
 
     # print MBI.MBC_old.get_class_history(client_id)
-    print MBI.import_profile(client_id)
+    # print MBI.import_profile(client_id)
