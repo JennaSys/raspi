@@ -1,9 +1,12 @@
+from pip._vendor.requests.api import request
 from suds.client import Client
 import BasicRequestHelper
 from datetime import datetime
 
 
 class ClassServiceCalls:
+    def __init__(self, site_id=-99):
+        self.site_id = site_id
 
     """This class contains examples of consumer methods for each ClientService method."""
 
@@ -51,14 +54,18 @@ class ClassServiceCalls:
                              staffIds=None,
                              locationId=None,
                              startClassDateTime=datetime.today(),
-                             endClassDateTime=datetime.today()):
-        result = ClassServiceMethods().GetClassDescriptions(classDescId,
+                             endClassDateTime=datetime.today(),
+                             fields=None):
+        result = ClassServiceMethods(self.site_id).GetClassDescriptions(classDescId,
                                                             programId,
                                                             staffIds,
                                                             locationId,
                                                             startClassDateTime,
-                                                            endClassDateTime)
-        print str(result)
+                                                            endClassDateTime,
+                                                            fields)
+        # print str(result)
+        return result
+
 
     """GetClasses Methods"""
 
@@ -116,7 +123,8 @@ class ClassServiceCalls:
 
     def GetClassVisits(self, classId):
         result = ClassServiceMethods().GetClassVisits(classId)
-        print str(result)
+        # print str(result)
+        return result
 
     """GetCourses Methods"""
 
@@ -221,13 +229,15 @@ class ClassServiceCalls:
 
 
 class ClassServiceMethods:
+    def __init__(self, site_id):
+        self.site_id = site_id
 
     """This class contains producer methods for all ClassService methods."""
     wsdl = BasicRequestHelper.BuildWsdlUrl("Class")
     service = Client(wsdl)
 
     def CreateBasicRequest(self, requestName):
-        return BasicRequestHelper.CreateBasicRequest(self.service, requestName)
+        return BasicRequestHelper.CreateBasicRequest(self.service, requestName, [self.site_id])
 
     """AddClientsToClasses methods"""
 
@@ -281,7 +291,8 @@ class ClassServiceMethods:
                              staffIds,
                              locationIds,
                              startClassDateTime,
-                             endClassDateTime):
+                             endClassDateTime,
+                             fields):
         """Note that although this call accepts arrays for all ID fields, it only uses the first value in each array."""
         request = self.CreateBasicRequest("GetClassDescriptions")
 
@@ -292,6 +303,12 @@ class ClassServiceMethods:
         request.LocationIDs = BasicRequestHelper.FillArrayType(self.service, locationIds, "Int")
         request.StartClassDateTime = startClassDateTime
         request.EndClassDateTime = endClassDateTime
+        if fields is not None:
+            f = self.service.factory.create("ArrayOfString")
+            f.string = fields
+            request.Fields = f
+            request.XMLDetail = "Basic"
+        request.PageSize = 1000
 
         return self.service.service.GetClassDescriptions(request)
 

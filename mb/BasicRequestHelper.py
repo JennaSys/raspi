@@ -4,13 +4,14 @@ from keys import mindbody   #this is a dictionary that holds the MB keys
    Much of the abstracted logic such as filling out credential objects and arrays
    resides in this class."""
 
-SOURCE_NAME = mindbody['SOURCE_NAME']
-SOURCE_PASSWORD = mindbody['SOURCE_PASSWORD']
-
-USER_NAME = mindbody['USER_NAME']
-USER_PASSWORD = mindbody['USER_PASSWORD']
-
-SITE_IDS = mindbody['SITE_IDS']
+# SOURCE_NAME = mindbody['SOURCE_NAME']
+# SOURCE_PASSWORD = mindbody['SOURCE_PASSWORD']
+#
+# USER_NAME = mindbody['USER_NAME']
+# USER_PASSWORD = mindbody['USER_PASSWORD']
+#
+# SITE_IDS = mindbody['SITE_IDS']
+SITE_IDS = [-99]
 
 
 def BuildWsdlUrl(serviceName):
@@ -74,13 +75,13 @@ def SetEnumerable(service, enum, value):
 
 def FillDefaultCredentials(service, request, siteIDs):
     sourceCreds = service.factory.create('SourceCredentials')
-    sourceCreds.SourceName = SOURCE_NAME
-    sourceCreds.Password = SOURCE_PASSWORD
+    sourceCreds.SourceName = mindbody[siteIDs[0]]["SOURCE_NAME"]
+    sourceCreds.Password = mindbody[siteIDs[0]]["SOURCE_PASSWORD"]
     sourceCreds.SiteIDs.int = siteIDs
 
     userCreds = service.factory.create('UserCredentials')
-    userCreds.Username = USER_NAME
-    userCreds.Password = USER_PASSWORD
+    userCreds.Username = mindbody[siteIDs[0]]["USER_NAME"]
+    userCreds.Password = mindbody[siteIDs[0]]["USER_PASSWORD"]
     userCreds.SiteIDs.int = siteIDs
 
     request.SourceCredentials = sourceCreds
