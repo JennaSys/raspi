@@ -11,8 +11,8 @@ class EyePi():
         self.pTiltR = 24
         self.pPanicBtn = 17
 
-        self.pan_minL = 1200
-        self.pan_maxL = 2300
+        self.pan_minL = 1000
+        self.pan_maxL = 2100
         self.tilt_minL = 800
         self.tilt_maxL = 2100
         self.pan_minR = 800
@@ -22,7 +22,7 @@ class EyePi():
 
         #pan_center = ((pan_max - pan_min) / 2) + pan_min
         #tilt_center = ((tilt_max - tilt_min) / 2) + tilt_min
-        self.pan_centerL = 1800
+        self.pan_centerL = 1600
         self.tilt_centerL = 1550
         self.pan_centerR = 1260
         self.tilt_centerR = 1600
