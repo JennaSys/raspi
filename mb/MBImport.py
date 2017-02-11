@@ -182,8 +182,8 @@ if __name__ == "__main__":
     # print result
 
 
-    client_id = '100002263'
-    new_client_id = '100001533'
+    client_id = '100006727'
+    new_client_id = '100008925'
     # MBI.MBC_old.update_custom_field(client_id, 'New ID', new_client_id)
 
     # contact_logs = MBI.MBC_old.get_contact_logs(client_id)

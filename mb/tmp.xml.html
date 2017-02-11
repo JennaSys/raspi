@@ -1,0 +1,101 @@
+2016-05-20 19:37:47,039 DEBUG sending:
+URL:https://api.mindbodyonline.com/0_5/ClientService.asmx
+HEADERS: {'SOAPAction': u'"http://clients.mindbodyonline.com/api/0_5/AddOrUpdateClients"', 'Content-Type': 'text/xml; charset=utf-8', 'Content-type': 'text/xml; charset=utf-8', 'Soapaction': u'"http://clients.mindbodyonline.com/api/0_5/AddOrUpdateClients"'}
+MESSAGE:
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:ns0="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:ns1="http://clients.mindbodyonline.com/api/0_5"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <ns0:Body>
+        <ns1:AddOrUpdateClients>
+            <ns1:Request>
+                <ns1:SourceCredentials>
+                    <ns1:SourceName>JennaSysEngineering</ns1:SourceName>
+                    <ns1:Password>U2aiZnC1fQ+opQjrwON7S/J1gsw=</ns1:Password>
+                    <ns1:SiteIDs>
+                        <ns1:int>-99</ns1:int>
+                    </ns1:SiteIDs>
+                </ns1:SourceCredentials>
+                <ns1:UserCredentials>
+                    <ns1:Username>Siteowner</ns1:Username>
+                    <ns1:Password>apitest1234</ns1:Password>
+                    <ns1:SiteIDs>
+                        <ns1:int>-99</ns1:int>
+                    </ns1:SiteIDs>
+                    <ns1:LocationID xsi:nil="true"/>
+                </ns1:UserCredentials>
+                <ns1:XMLDetail>Full</ns1:XMLDetail>
+                <ns1:PageSize>25</ns1:PageSize>
+                <ns1:CurrentPageIndex>0</ns1:CurrentPageIndex>
+                <ns1:UpdateAction>AddNew</ns1:UpdateAction>
+                <ns1:Test>false</ns1:Test>
+                <ns1:Clients>
+                    <ns1:Client>
+                        <ns1:Gender>Male</ns1:Gender>
+                        <ns1:Action>None</ns1:Action>
+                        <ns1:FirstName>Chuckie</ns1:FirstName>
+                        <ns1:LastName>Brown</ns1:LastName>
+                        <ns1:Email>cbrown@peanuts.com</ns1:Email>
+                        <ns1:BirthDate>1970-01-01</ns1:BirthDate>
+                        <ns1:HomeLocation>
+                            <ns1:Action>None</ns1:Action>
+                            <ns1:ID>-99</ns1:ID>
+                        </ns1:HomeLocation>
+                    </ns1:Client>
+                </ns1:Clients>
+                <ns1:SendEmail xsi:nil="true"/>
+            </ns1:Request>
+        </ns1:AddOrUpdateClients>
+    </ns0:Body>
+</SOAP-ENV:Envelope>
+2016-05-20 19:37:47,555 DEBUG received:
+CODE: 200
+HEADERS: {'content-length': '1442', 'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS', 'access-control-max-age': '86400', 'x-powered-by': 'ASP.NET', 'access-control-allow-credentials': 'true', 'x-aspnet-version': '4.0.30319', 'connection': 'close', 'cache-control': 'private, max-age=0', 'date': 'Sat, 21 May 2016 02:37:41 GMT', 'p3p': 'CAO DSP COR CUR TAIa OUR NOR UNI STA', 'access-control-allow-headers': 'Accept, SiteId, Authorization, Content-Type, Origin', 'content-type': 'text/xml; charset=utf-8', 'access-control-allow-origin': ''}
+MESSAGE:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <AddOrUpdateClientsResponse xmlns="http://clients.mindbodyonline.com/api/0_5">
+            <AddOrUpdateClientsResult>
+                <Status>Success</Status>
+                <ErrorCode>200</ErrorCode>
+                <XMLDetail>Full</XMLDetail>
+                <ResultCount>0</ResultCount>
+                <CurrentPageIndex>0</CurrentPageIndex>
+                <TotalPageCount>0</TotalPageCount>
+                <Clients>
+                    <Client>
+                        <MobileProvider xsi:nil="true"/>
+                        <AppointmentGenderPreference>None</AppointmentGenderPreference>
+                        <Gender>Male</Gender>
+                        <IsCompany>false</IsCompany>
+                        <LiabilityRelease>false</LiabilityRelease>
+                        <PromotionalEmailOptIn>true</PromotionalEmailOptIn>
+                        <CreationDate>2016-05-20T19:37:41.1050476-07:00</CreationDate>
+                        <Liability>
+                            <IsReleased>false</IsReleased>
+                            <AgreementDate xsi:nil="true"/>
+                            <ReleasedBy xsi:nil="true"/>
+                        </Liability>
+                        <UniqueID>100015662</UniqueID>
+                        <Action>Added</Action>
+                        <ID>100015662</ID>
+                        <FirstName>Chuckie</FirstName>
+                        <LastName>Brown</LastName>
+                        <Email>cbrown@peanuts.com</Email>
+                        <EmailOptIn>false</EmailOptIn>
+                        <State>CA</State>
+                        <Country>US</Country>
+                        <BirthDate>1970-01-01T00:00:00</BirthDate>
+                        <FirstAppointmentDate>2016-05-20T19:37:41.1050476-07:00</FirstAppointmentDate>
+                        <IsProspect>false</IsProspect>
+                        <ContactMethod>1</ContactMethod>
+                    </Client>
+                </Clients>
+            </AddOrUpdateClientsResult>
+        </AddOrUpdateClientsResponse>
+    </soap:Body>
+</soap:Envelope>

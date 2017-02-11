@@ -55,5 +55,5 @@ def import_clients(oldsite, newsite):
 
 
 if __name__ == "__main__":
-    # import_clients(-99, -99)  # TESTING
-    import_clients(41095, 293010)
+    import_clients(-99, -99)  # TESTING
+    # import_clients(41095, 293010)
