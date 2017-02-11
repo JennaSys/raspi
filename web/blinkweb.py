@@ -11,18 +11,20 @@ app = web.application(urls, globals())
 
 class snap:
     def GET(self, status):
+        global led_state
         response = '?'
         if not status: 
-            led_state = !led_state
+            led_state = not led_state
+            response = 'LED toggled!'
         else:
-			if status == "on":
-				led_state = True
-				response = "LED turned ON!"
-			elif status == "off":
-				led_state = False
-				response = "LED turned OFF!"
-			else:
-				response = 'Unknown command: ' + status + '!\n'	    
+            if status == "on":
+                led_state = True
+                response = "LED turned ON!"
+            elif status == "off":
+                led_state = False
+                response = "LED turned OFF!"
+            else:
+                response = 'Unknown command: ' + status + '!\n'	    
         GPIO.output(17,led_state)
         return response
 
