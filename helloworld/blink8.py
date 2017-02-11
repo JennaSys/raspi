@@ -40,8 +40,5 @@ try:
             clear_digit()
 
 except KeyboardInterrupt:
-    pass
-
-finally:
     GPIO.cleanup()
     
