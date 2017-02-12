@@ -4,22 +4,22 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17,GPIO.OUT)
+GPIO.setup(24,GPIO.OUT)
 
-p = GPIO.PWM(17, 50)
-p.start(100)
+pwm = GPIO.PWM(24, 100)
+pwm.start(0)
 
 while True:
 	
     try:
-        dc = raw_input('Enter a number between 0 and 100: ')
+        dc = raw_input('Enter a number between 0 and 100 (-1 to end): ')
         val = float(dc)
         if val < 0:
             break
-        p.ChangeDutyCycle(val)
+        pwm.ChangeDutyCycle(val)
  
     except ValueError:
         print 'Bad number: "' + dc + '"'
 
-p.stop()
+pwm.stop()
 GPIO.cleanup()
