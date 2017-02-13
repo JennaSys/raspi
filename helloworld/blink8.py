@@ -28,7 +28,7 @@ digits = [(0,1,2,3,4,5),
 def clear_digit():
     #turn off all segments
     for segment in segments:
-        GPIO.output(segments,True)
+        GPIO.output(segment,True)
 
 try:
     clear_digit()

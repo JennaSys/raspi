@@ -1,5 +1,4 @@
 import RPi.GPIO as GPIO
-from time import sleep
 import web
 
 GPIO.setmode(GPIO.BCM)
