@@ -28,12 +28,12 @@ pPan = 23
 pTilt = 24
 
 # Upper limit
-_ServoTiltUL = 200
-_ServoPanUL = 240
+_ServoTiltUL = 2000
+_ServoPanUL = 2400
 
 # Lower Limit
-_ServoTiltLL = 64
-_ServoPanLL = 64
+_ServoTiltLL = 640
+_ServoPanLL = 640
 
 # initial Position
 initPan = ((_ServoPanUL - _ServoPanLL) / 2) + _ServoPanLL
