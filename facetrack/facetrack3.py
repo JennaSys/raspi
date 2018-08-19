@@ -60,7 +60,6 @@ lastface = 0  # int 1-3 used to speed up detection. The script is looking for a 
 # 	doesn't find it, it's set back to zero and on the next loop it will search for all three.-
 # 	This basically tripples the detect time so long as the face hasn't moved much.
 
-pi.start()
 
 # init servos to center
 pi.set_servo_pulsewidth(pPan, initPan)
