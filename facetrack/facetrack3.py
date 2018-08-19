@@ -222,9 +222,7 @@ try:
                 aframe = capture.grab()  # again we grab some frames, things may have gotten stale-
                 aframe = capture.grab()  # since the frontalface search above
                 aframe = capture.read()[1]
-                pfacer = profileface.detectMultiScale(aframe, 1.3, 4, (
-                            cv2.cv.CV_HAAR_DO_CANNY_PRUNING + cv2.cv.CV_HAAR_FIND_BIGGEST_OBJECT + cv2.cv.CV_HAAR_DO_ROUGH_SEARCH),
-                                                      (80, 80))
+                pfacer = profileface.detectMultiScale(aframe, 1.3, 4, (cv2.cv.CV_HAAR_DO_CANNY_PRUNING + cv2.cv.CV_HAAR_FIND_BIGGEST_OBJECT + cv2.cv.CV_HAAR_DO_ROUGH_SEARCH), (80, 80))
                 # pfacer = profileface.detectMultiScale(aframe, 1.1, 2, 0,(50,60))
                 if pfacer != ():  # if we found a profile face...
                     lastface = 2
