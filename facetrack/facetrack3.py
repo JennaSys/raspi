@@ -28,12 +28,12 @@ pPan = 23
 pTilt = 24
 
 # Upper limit
-_ServoTiltUL = 2000
-_ServoPanUL = 2400
+_ServoTiltUL = 2100
+_ServoPanUL = 2000
 
 # Lower Limit
-_ServoTiltLL = 640
-_ServoPanLL = 640
+_ServoTiltLL = 800
+_ServoPanLL = 800
 
 # initial Position
 initPan = ((_ServoPanUL - _ServoPanLL) / 2) + _ServoPanLL
@@ -270,32 +270,32 @@ try:
         if Cface[0] != 0:  # if the Center of the face is not zero (meaning no face was found)
 
             if Cface[0] > 180:  # The camera is moved diffrent distances and speeds depending on how far away-
-                CamLeft(1, 1)  # from the center of that axis it detects a face
+                CamLeft(2, 1)  # from the center of that axis it detects a face
             if Cface[0] > 190:  #
-                CamLeft(2, 2)  #
+                CamLeft(10, 2)  #
             if Cface[0] > 200:  #
-                CamLeft(6, 3)  #
+                CamLeft(20, 3)  #
 
             if Cface[0] < 140:  # and diffrent dirrections depending on what side of center if finds a face.
-                CamRight(1, 1)
+                CamRight(2, 1)
             if Cface[0] < 130:
-                CamRight(2, 2)
+                CamRight(10, 2)
             if Cface[0] < 120:
-                CamRight(6, 3)
+                CamRight(20, 3)
 
             if Cface[1] > 140:  # and moves diffrent servos depending on what axis we are talking about.
-                CamDown(1, 1)
+                CamDown(2, 1)
             if Cface[1] > 150:
-                CamDown(2, 2)
+                CamDown(10, 2)
             if Cface[1] > 160:
-                CamDown(6, 3)
+                CamDown(20, 3)
 
             if Cface[1] < 100:
-                CamUp(1, 1)
+                CamUp(2, 1)
             if Cface[1] < 90:
-                CamUp(2, 2)
+                CamUp(10, 2)
             if Cface[1] < 80:
-                CamUp(6, 3)
+                CamUp(20, 3)
 
 except KeyboardInterrupt:
     pass
